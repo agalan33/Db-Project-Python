@@ -23,33 +23,16 @@ class ChatsHandler:
         return jsonify(Chats=result_list)
 
     def createChat(self, form):
-        result_list = []
         if len(form) != 1:
-            return jsonify(Error = "Malformed post request"), 400
+            return jsonify(Error="Malformed post request"), 400
         else:
             cname = form['cname']
             if cname:
-                chat1 = {
-                    "cid": "1",
-                    "cname": "dbProject"
-                }
-                chat2 = {
-                    "cid": "2",
-                    "cname": "friends"
-                }
-                chat3 = {
-                    "cid": "3",
-                    "cname": "family"
-                }
-                chat4 = {
+                result = {
                     "cid": "4",
                     "cname": cname
                 }
-                result_list.append(chat1)
-                result_list.append(chat2)
-                result_list.append(chat3)
-                result_list.append(chat4)
-                return jsonify(Chats=result_list)
+                return jsonify(Chats=result), 201
             else:
                 return jsonify(Error="Unexpected attributes in post request"), 400
 
