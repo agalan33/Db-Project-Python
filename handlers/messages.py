@@ -22,7 +22,7 @@ class MessagesHandler:
         result_list.append(msg1)
         result_list.append(msg2)
         result_list.append(msg3)
-        return jsonify(Chats=result_list)
+        return jsonify(Messages=result_list)
 
     def getMessageById(self, mid):
         result ={
@@ -71,7 +71,7 @@ class MessagesHandler:
                 result_list.append(msg2)
                 result_list.append(msg3)
                 result_list.append(msgCreated)
-                return jsonify(Chats=result_list)
+                return jsonify(Messages=result_list)
             else:
                 return jsonify(Error="Unexpected attributes in post request"), 400
         else:
