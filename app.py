@@ -65,10 +65,7 @@ def messages():
     if request.method == 'POST':
         return MessagesHandler().createMessage(request.form)
     elif request.method == 'GET':
-        if not request.args:
-            return MessagesHandler().getAllMessages()
-        else:
-            return MessagesHandler().getMessagesByHashtag(request.args)
+        return MessagesHandler().getAllMessages()
     else:
         return jsonify(Error="Method not allowed"), 405
 
