@@ -1,6 +1,7 @@
 from flask import Flask, request,jsonify
 from handlers.users import UserHandler
 from handlers.contactlist import ContactsHandler
+from handlers.chats import ChatsHandler
 import  json
 app = Flask(__name__)
 
@@ -31,6 +32,31 @@ def contacts():
         return ContactsHandler.getContactByFirstName(req)
 
     return jsonify(Error="Method Not Allowed"), 405
+
+
+@app.route('/DbProject/chats', methods=['GET', 'POST'])
+def chats():
+    if request.method == 'POST':
+        return ChatsHandler().createChat(request.form)
+    elif request.method == 'GET':
+        if not request.args:
+            return ChatsHandler().getAllChats()
+        else:
+            return ChatsHandler().searchChats(request.args)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/chats/<int:cid>', methods=['GET', 'PUT', 'DELETE'])
+def chatById(cid):
+    if request.method == 'GET':
+        return ChatsHandler().getChatById(cid)
+    elif request.method == 'PUT':
+        return ChatsHandler().updateChat(cid, request.form)
+    elif request.method == 'DELETE':
+        return ChatsHandler().deleteChat(cid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
 
 
 if __name__ == '__main__':
