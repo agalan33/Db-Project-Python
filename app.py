@@ -3,6 +3,7 @@ from handlers.users import UserHandler
 from handlers.contactlist import ContactsHandler
 from handlers.chats import ChatsHandler
 from handlers.messages import MessagesHandler
+from handlers.hashtags import HashtagsHandler
 import  json
 app = Flask(__name__)
 
@@ -76,6 +77,29 @@ def messageById(mid):
         return MessagesHandler().getMessageById(mid)
     elif request.method == 'DELETE':
         return MessagesHandler().deleteMessage(mid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/hashtags', methods=['GET', 'POST'])
+def hashtags():
+    if request.method == 'POST':
+        return HashtagsHandler().createHashtag(request.form)
+    elif request.method == 'GET':
+        if not request.args:
+            return HashtagsHandler().getHashtags()
+        else:
+            return HashtagsHandler().searchHashtag(request.args)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/hashtags/<int:hid>', methods=['GET', 'PUT'])
+def hashtagById(hid):
+    if request.method == 'GET':
+        return HashtagsHandler().getHashtagById(hid)
+    elif request.method == 'PUT':
+        return HashtagsHandler().updateHashtag(hid, request.form)
     else:
         return jsonify(Error="Method not allowed"), 405
 
