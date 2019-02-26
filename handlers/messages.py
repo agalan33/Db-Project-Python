@@ -25,7 +25,7 @@ class MessagesHandler:
         return jsonify(Messages=result_list)
 
     def getMessageById(self, mid):
-        result ={
+        result = {
             "mid": mid,
             "mimage": "http://wwww.imgur.com/photos/10",
             "mtext": "Found this photo on reddit XD "
