@@ -86,4 +86,4 @@ class ContactsHandler:
             'phone_number': '787-000-0000'
         }
 
-        return json.dumps(contact1)
+        return jsonify(Deleted = contact1)

@@ -15,20 +15,23 @@ class ReactionsHandler:
         result = []
         reaction1 = {
             'rid' : 0,
-            'like' : 30,
+            'like' : 1,
             'dislike' : 0,
+            'uid': 3
         }
 
         reaction2 = {
             'rid': 1,
-            'like': 572,
-            'dislike': 81,
+            'like': 1,
+            'dislike': 0,
+            'uid': 2
         }
 
         reaction3 = {
             'rid': 2,
-            'like': 5,
-            'dislike': 103,
+            'like': 0,
+            'dislike': 1,
+            'uid': 4
         }
 
         result.append((reaction1))
@@ -42,9 +45,10 @@ class ReactionsHandler:
     #Get reaction for a given id
     def getReactionById(seld, rid):
         result = {
-            'rid' : rid,
-            'like' : 5,
-            'dislike' : 103
+            'rid': 2,
+            'like': 0,
+            'dislike': 1,
+            'uid': 4
         }
 
         return jsonify(Reaction = result)
@@ -62,7 +66,8 @@ class ReactionsHandler:
                 result = {
                     'rid' : 1,
                     'like' : ulike,
-                    'dislike' : udislike
+                    'dislike' : udislike,
+                    'uid': 1
                 }
 
                 return jsonify(Update=result), 200
