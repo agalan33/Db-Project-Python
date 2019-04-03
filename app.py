@@ -175,8 +175,7 @@ def reactions(uid, cid, mid):
     else:
         return jsonify(Error="Method not allowed")
 
-
-
+      
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/reactions/<int:rid>', methods=['GET', 'PUT', 'DELETE'])
 def reactionsById(uid, cid, mid, rid):
     if request.method == 'GET':
@@ -206,6 +205,7 @@ def dashboardById(did):
         return DashboardHandler().updateDashboardById(did, request.form)
     else:
         return jsonify(Error='Method Not Allowed')
+
 
 
 

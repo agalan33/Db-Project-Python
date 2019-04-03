@@ -16,8 +16,8 @@ class UserHandler:
             'age': data['age'],
             'phone_number': data['phone_number']
         }
-
         return jsonify(CreatedUser = result)
+      
     def login(self, data):
         result = {
             'email': data['email'],
@@ -44,7 +44,6 @@ class UserHandler:
             'age':'47',
             'phone_number': '787-000-0000'
         }
-
         return jsonify(Users = result)
 
     def getAllUsers(self):
