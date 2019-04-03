@@ -16,6 +16,12 @@ app = Flask(__name__)
 def hello_world():
     return 'Welcome to DB Project'
 
+@app.route('/DbProject/create_account', methods=['POST'])
+def manage_account():
+    if request.method == 'POST':
+        print('Created New User: ', jsonify(request.args))
+        return jsonify(CreatedUser=UserHandler().createUser(request.args))
+
 ###########################################
 #             User                        #
 ###########################################
@@ -48,10 +54,7 @@ def manage_users():
 def manage_user(uid):
     if request.method == 'GET':
         return UserHandler().getUsersById(uid)
-    elif request.method == 'PUT':
-        return UserHandler().updateUser(uid)
-    else:
-        return jsonify(Error="Method Not Allowed")
+    return jsonify(Error="Method Not Allowed")
 
 ###########################################
 #             Contact                     #
@@ -205,13 +208,6 @@ def dashboardById(did):
         return DashboardHandler().updateDashboardById(did, request.form)
     else:
         return jsonify(Error='Method Not Allowed')
-
-
-
-
-
-
-
 
 
 
