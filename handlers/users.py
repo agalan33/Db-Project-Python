@@ -16,8 +16,21 @@ class UserHandler:
             'age': data['age'],
             'phone_number': data['phone_number']
         }
+        return jsonify(CreatedUser = result)
+      
+    def login(self, data):
+        result = {
+            'email': data['email'],
+            'password': data['password'],
+        }
+        return jsonify(LoggedIn = result)
 
-        return json.dumps(result)
+    def updateUser(self,data,uid):
+        result = {
+            'uid': uid,
+            'email': data['email']
+        }
+        return jsonify(UpdatedUser = result)
 
 
     def getUsersById(self, uid):
@@ -31,8 +44,7 @@ class UserHandler:
             'age':'47',
             'phone_number': '787-000-0000'
         }
-
-        return json.dumps(result)
+        return jsonify(Users = result)
 
     def getAllUsers(self):
         result = []
@@ -69,4 +81,4 @@ class UserHandler:
         result.append(user1)
         result.append(user2)
         result.append(user3)
-        return jsonify(result)
+        return jsonify(Users = result)

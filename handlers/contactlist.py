@@ -85,5 +85,5 @@ class ContactsHandler:
             'email': 'manuel.rodriguez@upr.edu',
             'phone_number': '787-000-0000'
         }
+        return jsonify(Deleted = contact1)
 
-        return json.dumps(contact1)
