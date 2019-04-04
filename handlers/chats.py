@@ -1,25 +1,22 @@
 from flask import jsonify
+from dao.chats import ChatsDAO
 
 
 class ChatsHandler:
+    def build_chat_dict(self, row):
+        result = {}
+        result['cid'] = row[0]
+        result['cname'] = row[1]
+        result['uid'] = row[2]
+        return result
 
-    def getAllChats(self):
+    def get_all_chats(self):
+        dao = ChatsDAO()
+        chats_list = dao.get_all_chats()
         result_list = []
-        chat1 = {
-            "cid": "1",
-            "cname": "dbProject"
-        }
-        chat2 = {
-            "cid": "2",
-            "cname": "friends"
-        }
-        chat3 = {
-            "cid": "3",
-            "cname": "family"
-        }
-        result_list.append(chat1)
-        result_list.append(chat2)
-        result_list.append(chat3)
+        for row in chats_list:
+            result = self.build_chat_dict(row)
+            result_list.append(result)
         return jsonify(Chats=result_list)
 
     def createChat(self, form):
@@ -70,11 +67,23 @@ class ChatsHandler:
             else:
                 return jsonify(Error="Unexpected attributes in update request"), 400
 
-
-
     def deleteChat(self, cid):
         chatToDelete = {
             "cid": cid,
             "cname": "PUBG"
         }
         return jsonify(DeleteStatus="OK"), 200
+
+    def get_chat_owner(self, cid):
+        dao = ChatsDAO()
+        row = dao.get_chat_owner(cid)
+        if not row:
+            return jsonify(Error="User not found"), 404
+        else:
+            user = {
+                'uid': row[0],
+                'ufirst_name': row[1],
+                'ulast_name:': row[2]
+            }
+            return jsonify(User=user)
+

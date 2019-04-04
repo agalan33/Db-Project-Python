@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify
 from handlers.users import UserHandler
 from handlers.contactlist import ContactsHandler
@@ -8,9 +7,10 @@ from handlers.chats import ChatsHandler
 from handlers.messages import MessagesHandler
 from handlers.hashtags import HashtagsHandler
 import  json
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route('/')
 def hello_world():
@@ -53,6 +53,7 @@ def manage_user(uid):
     else:
         return jsonify(Error="Method Not Allowed")
 
+
 ###########################################
 #             Contact                     #
 ###########################################
@@ -93,7 +94,7 @@ def chats(uid):
         return ChatsHandler().createChat(request.form)
     elif request.method == 'GET':
         if not request.args:
-            return ChatsHandler().getAllChats()
+            return ChatsHandler().get_all_chats()
         else:
             return ChatsHandler().searchChats(request.args)
     else:
@@ -108,6 +109,14 @@ def chatById(uid, cid):
         return ChatsHandler().updateChat(cid, request.form)
     elif request.method == 'DELETE':
         return ChatsHandler().deleteChat(cid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/chats/<int:cid>/owner', methods=['GET'])
+def chat_owner(cid):
+    if request.method == 'GET':
+        return ChatsHandler().get_chat_owner(cid)
     else:
         return jsonify(Error="Method not allowed"), 405
 
@@ -205,14 +214,6 @@ def dashboardById(did):
         return DashboardHandler().updateDashboardById(did, request.form)
     else:
         return jsonify(Error='Method Not Allowed')
-
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
