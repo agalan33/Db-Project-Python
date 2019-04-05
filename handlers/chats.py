@@ -46,12 +46,14 @@ class ChatsHandler:
             return jsonify(Error="Malformed query string"), 400
         return jsonify(Chats=result_list)
 
-    def getChatById(self, cid):
-        result = {
-            "cid": cid,
-            "cname": "Fortnite"
-        }
-        return jsonify(Chat=result)
+    def get_chat(self, cid, uid):
+        dao = ChatsDAO()
+        row = dao.get_chat(cid, uid)
+        if not row:
+            return jsonify(Error="Chat not found"), 404
+        else:
+            result = self.build_chat_dict(row)
+            return jsonify(Chat=result)
 
     def updateChat(self, cid, form):
         if len(form) != 1:

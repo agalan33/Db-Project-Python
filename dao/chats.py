@@ -12,7 +12,7 @@ class ChatsDAO:
 
     def get_all_chats(self):
         cursor = self.conn.cursor()
-        query = "select * from chat;"
+        query = "select * from chats;"
         cursor.execute(query)
         result = []
         for row in cursor:
@@ -20,9 +20,17 @@ class ChatsDAO:
         cursor.close()
         return result
 
+    def get_chat(self, cid, uid):
+        cursor = self.conn.cursor()
+        query = "select * from chats where cid = (select cid from isMember where cid = %s and uid = %s)"
+        cursor.execute(query, (cid, uid,))
+        result = cursor.fetchone()
+        cursor.close()
+        return result
+
     def get_chat_owner(self, cid):
         cursor = self.conn.cursor()
-        query = "select uid, ufirst_name, ulast_name from users natural inner join chat where cid = %s;"
+        query = "select uid, ufirst_name, ulast_name from users natural inner join chats where cid = %s;"
         cursor.execute(query, (cid,))
         result = cursor.fetchone()
         cursor.close()

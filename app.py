@@ -104,7 +104,7 @@ def chats(uid):
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>', methods=['GET', 'PUT', 'DELETE'])
 def chatById(uid, cid):
     if request.method == 'GET':
-        return ChatsHandler().getChatById(cid)
+        return ChatsHandler().get_chat(cid, uid)
     elif request.method == 'PUT':
         return ChatsHandler().updateChat(cid, request.form)
     elif request.method == 'DELETE':
@@ -130,7 +130,7 @@ def messages(uid, cid):
     if request.method == 'POST':
         return MessagesHandler().createMessage(request.form)
     elif request.method == 'GET':
-        return MessagesHandler().getAllMessages()
+        return MessagesHandler().get_chat_messages(cid)
     else:
         return jsonify(Error="Method not allowed"), 405
 
