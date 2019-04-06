@@ -3,7 +3,8 @@ create table messages(
     mimage varchar(200),
     mtext varchar(200),
     uid integer references users(uid),
-    cid integer references chat(cid)
+    cid integer references chat(cid),
+    mdate timestamp with time zone default now()
 );
 
 create table chats(
