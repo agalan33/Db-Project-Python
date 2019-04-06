@@ -138,9 +138,17 @@ def messages(uid, cid):
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>', methods=['GET', 'DELETE'])
 def messageById(uid, cid, mid):
     if request.method == 'GET':
-        return MessagesHandler().getMessageById(mid)
+        return MessagesHandler().get_message(mid)
     elif request.method == 'DELETE':
         return MessagesHandler().deleteMessage(mid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/replies', methods=['GET'])
+def replies(uid, cid, mid):
+    if request.method == 'GET':
+        return MessagesHandler().get_replies(mid)
     else:
         return jsonify(Error="Method not allowed"), 405
 

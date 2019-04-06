@@ -10,6 +10,10 @@ class ChatsHandler:
         result['uid'] = row[2]
         return result
 
+    ###########################################
+    #             GETS                        #
+    ###########################################
+
     def get_all_chats(self):
         dao = ChatsDAO()
         chats_list = dao.get_all_chats()
@@ -54,6 +58,10 @@ class ChatsHandler:
         else:
             result = self.build_chat_dict(row)
             return jsonify(Chat=result)
+
+    ###########################################
+    #             OTHER CRUD                  #
+    ###########################################
 
     def updateChat(self, cid, form):
         if len(form) != 1:
