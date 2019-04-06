@@ -11,6 +11,7 @@ class MessagesHandler:
         result['uid'] = row[4]
         result['ufirst_name'] = row[5]
         result['ulast_name'] = row[6]
+        result['mdate'] = row[7]
         return result
 
     ###########################################
@@ -55,7 +56,7 @@ class MessagesHandler:
             return jsonify(Error="Message not found"), 404
         else:
             result = self.build_message_dict(row)
-            return jsonify(Message=result)
+            return jsonify(result)
 
     def get_replies(self, mid):
         dao = MessagesDAO()
@@ -64,7 +65,7 @@ class MessagesHandler:
         for row in replies_list:
             result = self.build_message_dict(row)
             result_list.append(result)
-        return jsonify(Replies=result_list)
+        return jsonify(result_list)
 
     ###########################################
     #             OTHER CRUD                  #

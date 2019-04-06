@@ -26,9 +26,9 @@ class MessagesDAO:
 
     def get_chat_messages(self, cid):
         cursor = self.conn.cursor()
-        query = "select mid, mimage, mtext, cid, uid, ufirst_name, ulast_name " \
+        query = "select mid, mimage, mtext, cid, uid, ufirst_name, ulast_name, mdate " \
                 "from messages natural inner join users " \
-                "where cid = %s"
+                "where cid = %s and mimage is not null"
         cursor.execute(query, (cid,))
         result = []
         for row in cursor:
@@ -38,7 +38,7 @@ class MessagesDAO:
 
     def get_message(self, mid):
         cursor = self.conn.cursor()
-        query = "select mid, mimage, mtext, cid, uid, ufirst_name, ulast_name " \
+        query = "select mid, mimage, mtext, cid, uid, ufirst_name, ulast_name, mdate " \
                 "from messages natural inner join users " \
                 "where mid = %s"
         cursor.execute(query, (mid,))
@@ -48,7 +48,7 @@ class MessagesDAO:
 
     def get_message_replies(self, mid):
         cursor = self.conn.cursor()
-        query = "select mid, mimage, mtext, cid, uid, ufirst_name, ulast_name " \
+        query = "select mid, mimage, mtext, cid, uid, ufirst_name, ulast_name, mdate " \
                 "from messages as m inner join replies r on m.mid = r.reply_id natural inner join users " \
                 "where original_id = %s"
         cursor.execute(query, (mid,))
