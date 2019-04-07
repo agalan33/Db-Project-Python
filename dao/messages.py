@@ -16,7 +16,7 @@ class MessagesDAO:
 
     def get_all_messages(self):
         cursor = self.conn.cursor()
-        query = "select * from messages"
+        query = "select mid, mimage, mtext, mdate, uid from messages"
         cursor.execute(query)
         result = []
         for row in cursor:
@@ -58,4 +58,14 @@ class MessagesDAO:
         cursor.close()
         return result
 
-
+    def get_posts_per_day(self):
+        cursor = self.conn.cursor()
+        query = "select date(mdate), count(*) " \
+                "from messages " \
+                "group by date(mdate)"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result

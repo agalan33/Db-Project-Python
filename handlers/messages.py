@@ -14,30 +14,32 @@ class MessagesHandler:
         result['mdate'] = row[7]
         return result
 
+    def build_simple_messege_dict(self, row):
+        result = {}
+        result['mid'] = row[0]
+        result['mimage'] = row[1]
+        result['mtext'] = row[2]
+        result['mdate'] = row[3]
+        result['uid'] = row[4]
+        return result
+
+    def build_daily_posts_count_dict(self, row):
+        result = {}
+        result['day'] = row[0]
+        result['total'] = row[1]
+        return result
+
     ###########################################
     #             GETS                        #
     ###########################################
 
-    def getAllMessages(self):
+    def get_all_messages(self):
+        dao = MessagesDAO()
+        message_list = dao.get_all_messages()
         result_list = []
-        msg1 = {
-            "mid": "1",
-            "mimage": "http://wwww.imgur.com/photos/10",
-            "mtext": "Found this photo on reddit XD "
-        }
-        msg2 = {
-            "mid": "2",
-            "mimage": "http://wwww.imgur.com/photos/12",
-            "mtext": "Found this photo on tumblr XD ",
-        }
-        msg3 = {
-            "mid": "3",
-            "mimage": "http://wwww.imgur.com/photos/15",
-            "mtext": "Found this photo on imgur :o ",
-        }
-        result_list.append(msg1)
-        result_list.append(msg2)
-        result_list.append(msg3)
+        for row in message_list:
+            result = self.build_simple_messege_dict(row)
+            result_list.append(result)
         return jsonify(result_list)
 
     def get_chat_messages(self, cid):
@@ -66,6 +68,15 @@ class MessagesHandler:
             result = self.build_message_dict(row)
             result_list.append(result)
         return jsonify(result_list)
+
+    def get_posts_per_day(self):
+        dao = MessagesDAO()
+        count_list = dao.get_posts_per_day()
+        result_list = []
+        for row in count_list:
+            result = self.build_daily_posts_count_dict(row)
+            result_list.append(result)
+        return jsonify(TotalDailyPosts=result_list)
 
     ###########################################
     #             OTHER CRUD                  #

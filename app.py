@@ -125,8 +125,17 @@ def chat_owner(cid):
 #             Messages                    #
 ###########################################
 
+@app.route('/DbProject/messages', methods=['GET', 'POST'])
+def messages():
+    if request.method == 'POST':
+        return MessagesHandler().createMessage(request.form)
+    elif request.method == 'GET':
+        return MessagesHandler().get_all_messages()
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages', methods=['GET', 'POST'])
-def messages(uid, cid):
+def messages_from_chat(uid, cid):
     if request.method == 'POST':
         return MessagesHandler().createMessage(request.form)
     elif request.method == 'GET':
@@ -149,6 +158,14 @@ def messageById(uid, cid, mid):
 def replies(uid, cid, mid):
     if request.method == 'GET':
         return MessagesHandler().get_replies(mid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/messages/daily_count', methods=['GET'])
+def posts_per_day():
+    if request.method == 'GET':
+        return MessagesHandler().get_posts_per_day()
     else:
         return jsonify(Error="Method not allowed"), 405
 
