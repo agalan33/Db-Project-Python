@@ -197,6 +197,14 @@ def hashtagById(uid, cid, mid, hid):
         return jsonify(Error="Method not allowed"), 405
 
 
+@app.route('/DbProject/messages/<int:mid>/hashtags', methods=['GET'])
+def message_hashtags(mid):
+    if request.method == 'GET':
+        return HashtagsHandler().get_message_hashtags(mid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
 ###########################################
 #             Reactions                   #
 ###########################################
