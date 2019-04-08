@@ -1,7 +1,12 @@
 from flask import jsonify
+from dao.messages import MessagesDAO
+import re
 
 
 class HashtagsHandler:
+    @staticmethod
+    def get_mtext_hashtags(mtext):
+        return re.findall(r"#(\w+)", mtext)
 
     def getHashtags(self):
         result_list = []
@@ -79,3 +84,15 @@ class HashtagsHandler:
                 return jsonify(Error="Unexpected attributes in post request"), 400
         else:
             return jsonify(Error="Malformed update request"), 400
+
+    def get_message_hashtags(self, mid):
+        message_dao = MessagesDAO()
+        row = message_dao.get_message(mid)
+        if not row:
+            return jsonify(Error="Message not found")
+        else:
+            mtext = row[2]
+            result_list = self.get_mtext_hashtags(mtext)
+            return jsonify(Hashtags=result_list)
+
+

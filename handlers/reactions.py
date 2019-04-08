@@ -3,6 +3,7 @@ from dao.reactions import ReactionsDAO
 from dao.messages import MessagesDAO
 import json
 
+
 class ReactionsHandler:
     def build_reaction_dict(self, row):
         result = {}

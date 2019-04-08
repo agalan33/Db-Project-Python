@@ -8,9 +8,10 @@ from handlers.chats import ChatsHandler
 from handlers.messages import MessagesHandler
 from handlers.hashtags import HashtagsHandler
 import  json
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route('/')
 def hello_world():
@@ -112,16 +113,24 @@ def chatById(uid, cid):
         return jsonify(Error="Method not allowed"), 405
 
 
+@app.route('/DbProject/chats/<int:cid>/owner', methods=['GET'])
+def chat_owner(cid):
+    if request.method == 'GET':
+        return ChatsHandler().get_chat_owner(cid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
 ###########################################
 #             Messages                    #
 ###########################################
 
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages', methods=['GET', 'POST'])
-def messages(uid, cid):
+def messages_from_chat(uid, cid):
     if request.method == 'POST':
         return MessagesHandler().createMessage(request.form)
     elif request.method == 'GET':
-        return MessagesHandler().getAllMessages()
+        return MessagesHandler().get_chat_messages(cid)
     else:
         return jsonify(Error="Method not allowed"), 405
 
@@ -129,9 +138,25 @@ def messages(uid, cid):
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>', methods=['GET', 'DELETE'])
 def messageById(uid, cid, mid):
     if request.method == 'GET':
-        return MessagesHandler().getMessageById(mid)
+        return MessagesHandler().get_message(mid)
     elif request.method == 'DELETE':
         return MessagesHandler().deleteMessage(mid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/replies', methods=['GET'])
+def replies(uid, cid, mid):
+    if request.method == 'GET':
+        return MessagesHandler().get_replies(mid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/messages/daily_count', methods=['GET'])
+def posts_per_day():
+    if request.method == 'GET':
+        return MessagesHandler().get_posts_per_day()
     else:
         return jsonify(Error="Method not allowed"), 405
 
@@ -163,6 +188,14 @@ def hashtagById(uid, cid, mid, hid):
         return jsonify(Error="Method not allowed"), 405
 
 
+@app.route('/DbProject/messages/<int:mid>/hashtags', methods=['GET'])
+def message_hashtags(mid):
+    if request.method == 'GET':
+        return HashtagsHandler().get_message_hashtags(mid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
 ###########################################
 #             Reactions                   #
 ###########################################
@@ -176,6 +209,7 @@ def reactions(uid, cid, mid):
     else:
         return jsonify(Error="Method not allowed")
 
+      
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/reactions/<int:rid>', methods=['GET', 'PUT', 'DELETE'])
 def reactionsById(uid, cid, mid, rid):
     if request.method == 'GET':
@@ -235,6 +269,7 @@ def dashboardById(did):
         return DashboardHandler().updateDashboardById(did, request.form)
     else:
         return jsonify(Error='Method Not Allowed')
+
 
 
 
