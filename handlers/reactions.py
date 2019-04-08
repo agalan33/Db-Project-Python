@@ -58,8 +58,8 @@ class ReactionsHandler:
 
     # Get number of likes for message with message id equal to mid
     def get_number_of_likes(self, mid):
-        dao = ReactionsDAO
-        message_dao = MessagesDAO
+        dao = ReactionsDAO()
+        message_dao = MessagesDAO()
         message = message_dao.get_message(mid)
         if not message:
             return jsonify(Error="Message does not exist"), 404
@@ -69,8 +69,8 @@ class ReactionsHandler:
 
     # Get number of likes for message with message id equal to mid
     def get_number_of_dislikes(self, mid):
-        dao = ReactionsDAO
-        message_dao = MessagesDAO
+        dao = ReactionsDAO()
+        message_dao = MessagesDAO()
         message = message_dao.get_message(mid)
         if not message:
             return jsonify(Error="Message does not exist"), 404
@@ -80,30 +80,30 @@ class ReactionsHandler:
 
     # Get total number of likes in the system
     def get_total_likes(self):
-        dao = ReactionsDAO
+        dao = ReactionsDAO()
         total_likes = dao.get_total_likes()
         return jsonify(Likes=total_likes)
 
     # Get total number of dislikes in the system
     def get_total_dislikes(self):
-        dao = ReactionsDAO
+        dao = ReactionsDAO()
         total_dislikes = dao.get_total_dislikes()
         return jsonify(Dislikes=total_dislikes)
 
     # Get list of users that liked message with id equal to mid
     def get_users_that_liked(self, mid):
-        dao = ReactionsDAO
-        users = dao.get_users_that_liked_message()
+        dao = ReactionsDAO()
+        users = dao.get_users_that_liked_message(mid)
         result = []
         for user in users:
             dict = self.build_user_dict(user)
             result.append(dict)
-        jsonify(Users=result)
+        return jsonify(Users=result)
 
     # Get list of users that disliked message with id equal to mid
     def get_users_that_disliked(self, mid):
-        dao = ReactionsDAO
-        users = dao.get_users_that_disliked_message()
+        dao = ReactionsDAO()
+        users = dao.get_users_that_disliked_message(mid)
         result = []
         for user in users:
             dict = self.build_user_dict(user)

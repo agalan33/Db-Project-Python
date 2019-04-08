@@ -1,5 +1,6 @@
 from flask import jsonify
 from dao.messages import MessagesDAO
+from dao.hashtags import HashtagsDAO
 import re
 
 
@@ -8,27 +9,89 @@ class HashtagsHandler:
     def get_mtext_hashtags(mtext):
         return re.findall(r"#(\w+)", mtext)
 
-    def getHashtags(self):
-        result_list = []
-        hash1 = {
-            "hid": "1",
-            "htext": "trending",
-            "htimes_used": "20"
-        }
-        hash2 = {
-            "hid": "2",
-            "htext": "lol",
-            "htimes_used": "2"
-        }
-        hash3 = {
-            "hid": "3",
-            "htext": "funny",
-            "htimes_used": "10"
-        }
-        result_list.append(hash1)
-        result_list.append(hash2)
-        result_list.append(hash3)
-        return jsonify(Hashtags=result_list)
+    def build_trending_dict(self, row):
+        result = {}
+        result['htext'] = row[0]
+        result['position'] = row[1]
+        return result
+
+    def build_hashtag_dict(self, row):
+        result = {}
+        result['hid'] = row[0]
+        result['htext'] = row[1]
+        return result
+
+    def build_message_dict(self, row):
+        result = {}
+        result['mid'] = row[0]
+        result['mtext'] = row[1]
+        return result
+
+
+    ###########################################
+    #               GETS                      #
+    ###########################################
+
+
+    # Get all hashtags in system
+    def get_hashtags(self):
+        dao = HashtagsDAO()
+        hashtags = dao.get_hashtags()
+        result = []
+        for hashtag in hashtags:
+            dict = self.build_hashtag_dict(hashtag)
+            result.append(dict)
+        return jsonify(Hashtags=result)
+
+    # Get top 10 used hashtags with respective positions
+    def get_trending(self):
+        dao = HashtagsDAO()
+        trending = dao.get_trending_hashtags()
+        result = []
+        for hashtag in trending:
+            dict = self.build_trending_dict(hashtag)
+            result.append(dict)
+        return jsonify(Trending=result)
+
+    # Get hashtags contained in message with id equal to mid
+    def get_hashtags_for_message(self, mid):
+        dao = HashtagsDAO()
+        hashtags = dao.get_hashtags_per_message(mid)
+        result = []
+        for hashtag in hashtags:
+            dict = self.build_hashtag_dict(hashtag)
+            result.append(dict)
+        return jsonify(Hashtag=result)
+
+    # Get hashtag with id equal to hid
+    def get_hashtag_by_id(self, hid):
+        dao = HashtagsDAO()
+        hashtag = dao.get_hashtag_by_id(hid)
+        if not hashtag:
+            return jsonify(Error="Hashtag not found"), 404
+        else:
+            result = self.build_hashtag_dict(hashtag)
+            return jsonify(Hashtag=result)
+
+    # Get times used for hashtag with id equal to hid
+    def get_times_used(self, hid):
+        dao = HashtagsDAO()
+        times_used = dao.get_times_used(hid)
+        return jsonify(Used=times_used)
+
+    # Get messages that used hashtag with id equal to hid
+    def get_messages_with_hashtag(self, hid):
+        dao = HashtagsDAO()
+        messages = dao.get_messages_with_hashtag(hid)
+        result = []
+        for message in messages:
+            dict = self.build_message_dict(message)
+            result.append(dict)
+        return jsonify(Messages=result)
+
+
+
+
 
     def searchHashtag(self, args):
         text = args.get('htext')
@@ -44,13 +107,6 @@ class HashtagsHandler:
             return jsonify(Error="Malformed query string"), 400
         return jsonify(Hashtag=result_list)
 
-    def getHashtagById(self, hid):
-        result = {
-            "hid": hid,
-            "htext": "lol",
-            "htimes_used": "10"
-        }
-        return jsonify(Hashtag=result)
 
     def createHashtag(self, form):
         text = form['htext']
@@ -85,14 +141,6 @@ class HashtagsHandler:
         else:
             return jsonify(Error="Malformed update request"), 400
 
-    def get_message_hashtags(self, mid):
-        message_dao = MessagesDAO()
-        row = message_dao.get_message(mid)
-        if not row:
-            return jsonify(Error="Message not found")
-        else:
-            mtext = row[2]
-            result_list = self.get_mtext_hashtags(mtext)
-            return jsonify(Hashtags=result_list)
+
 
 

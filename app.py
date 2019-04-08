@@ -171,29 +171,57 @@ def hashtags(uid, cid, mid):
         return HashtagsHandler().createHashtag(request.form)
     elif request.method == 'GET':
         if not request.args:
-            return HashtagsHandler().getHashtags()
+            return HashtagsHandler().get_hashtags_for_message(mid)
         else:
             return HashtagsHandler().searchHashtag(request.args)
     else:
         return jsonify(Error="Method not allowed"), 405
 
 
-@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/hashtags/<int:hid>', methods=['GET', 'PUT'])
-def hashtagById(uid, cid, mid, hid):
+@app.route('/DbProject/hashtags/<int:hid>', methods=['GET', 'PUT'])
+def hashtagById(hid):
     if request.method == 'GET':
-        return HashtagsHandler().getHashtagById(hid)
+        return HashtagsHandler().get_hashtag_by_id(hid)
     elif request.method == 'PUT':
         return HashtagsHandler().updateHashtag(hid, request.form)
     else:
         return jsonify(Error="Method not allowed"), 405
 
 
-@app.route('/DbProject/messages/<int:mid>/hashtags', methods=['GET'])
-def message_hashtags(mid):
+@app.route('/DbProject/hashtags/<int:hid>/times', methods=['GET'])
+def times_used(hid):
     if request.method == 'GET':
-        return HashtagsHandler().get_message_hashtags(mid)
+        return HashtagsHandler().get_times_used(hid)
+    else:
+        return jsonify(Error="Method now allowed"), 405
+
+
+@app.route('/DbProject/hashtags/<int:hid>/messages', methods=['GET'])
+def message_hashtags(hid):
+    if request.method == 'GET':
+        return HashtagsHandler().get_messages_with_hashtag(hid)
     else:
         return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/hashtags/', methods=['GET'])
+def all_hashtags():
+    if request.method == 'GET':
+        return HashtagsHandler().get_hashtags()
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/hashtags/trending', methods=['GET'])
+def trending_hashtags():
+    if request.method == 'GET':
+        return HashtagsHandler().get_trending()
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+
+
 
 
 ###########################################
@@ -223,28 +251,28 @@ def reactionsById(uid, cid, mid, rid):
 
 
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/likes', methods=['GET'])
-def likes_by_mid(mid):
+def likes_by_mid(uid, cid, mid):
     if request.method == 'GET':
         return ReactionsHandler().get_number_of_likes(mid)
     else:
         return jsonify(Error='Method Not Allowed')
 
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/dislikes', methods=['GET'])
-def dislikes_by_mid(mid):
+def dislikes_by_mid(uid, cid, mid):
     if request.method == 'GET':
         return ReactionsHandler().get_number_of_dislikes(mid)
     else:
         return jsonify(Error='Method Not Allowed')
 
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/likes/users', methods=['GET'])
-def users_liked(mid):
+def users_liked(uid, cid, mid):
     if request.method == 'GET':
         return ReactionsHandler().get_users_that_liked(mid)
     else:
         return jsonify(Error='Method Not Allowed')
 
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/dislikes/users', methods=['GET'])
-def users_disliked(mid):
+def users_disliked(uid, cid, mid):
     if request.method == 'GET':
         return ReactionsHandler().get_users_that_disliked(mid)
     else:

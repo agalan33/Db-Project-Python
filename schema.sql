@@ -35,6 +35,26 @@ CREATE TABLE users(
     uage int
 );
 
+create table reactions(
+    rid serial primary key,
+    rlike integer,
+    rdislike integer,
+    mid integer references messages(mid),
+    uid integer references users(uid),
+    rdate timestamp with time zone default now()
+);
+
+create table hashtags(
+    hid serial primary key,
+    htext varchar(30)
+);
+
+create table contains(
+    mid integer references messages(mid),
+    hid integer references hashtags(hid),
+    primary key (mid, hid)
+);
+
 
 
 
