@@ -1,7 +1,19 @@
 from flask import jsonify
+from dao.users import UsersDao
 import json
 
 class UserHandler:
+
+    def map_to_User(self, row):
+        user = {}
+        user['uid'] = row[0]
+        user['username'] = row[1]
+        user['ufirst_name'] = row[2]
+        user['ulast_name'] = row[3]
+        user['uemail'] = row[4]
+        user['uphone'] = row[5]
+        user['uage'] = row[6]
+        return user
 
     def createUser(self, data):
         if len(data) < 7:
@@ -34,51 +46,23 @@ class UserHandler:
 
 
     def getUsersById(self, uid):
-        result = {
-            'uid': uid,
-            'first_name': 'Manuel',
-            'last_name': 'Rodriguez',
-            'email': 'manuel.rodriguez@upr.edu',
-            'username': 'manu',
-            'password': 'colegio',
-            'age':'47',
-            'phone_number': '787-000-0000'
-        }
-        return jsonify(Users = result)
+        dao = UsersDao()
+        result = dao.getUserById(uid)
+        result = self.map_to_User(result)
+        return jsonify(result)
 
     def getAllUsers(self):
         result = []
-        user1 = {
-            'uid': 1,
-            'first_name': 'Manuel',
-            'last_name': 'Rodriguez',
-            'email': 'manuel.rodriguez@upr.edu',
-            'username': 'manu',
-            'password': 'colegio',
-            'age': '47',
-            'phone_number': '787-000-0000'
-        }
-        user2 = {
-            'uid': 2,
-            'first_name': 'Jean',
-            'last_name': 'Perez',
-            'email': 'jean.perez@upr.edu',
-            'username': 'jean',
-            'password': 'colegio',
-            'age': '18',
-            'phone_number': '787-100-0100'
-        }
-        user3 = {
-            'uid': 3,
-            'first_name': 'Carlos',
-            'last_name': 'Rivera',
-            'email': 'carlos.rivera@upr.edu',
-            'username': 'crivera',
-            'password': 'colegio',
-            'age': '47',
-            'phone_number': '787-040-0500'
-        }
-        result.append(user1)
-        result.append(user2)
-        result.append(user3)
-        return jsonify(Users = result)
+        dao = UsersDao()
+        result = dao.getAllUsers()
+        mapped_result = []
+        for r in result:
+            mapped_result.append(self.map_to_User(r))
+        return jsonify(mapped_result)
+        return jsonify(result)
+
+    def getUserByUsername(self,username):
+        dao = UsersDao()
+        result = dao.getUserByUsername(username)
+        result = self.map_to_User(result)
+        return jsonify(result)
