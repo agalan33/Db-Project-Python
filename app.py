@@ -16,12 +16,6 @@ app = Flask(__name__)
 def hello_world():
     return 'Welcome to DB Project'
 
-@app.route('/DbProject/create_account', methods=['POST'])
-def manage_account():
-    if request.method == 'POST':
-        print('Created New User: ', jsonify(request.args))
-        return jsonify(CreatedUser=UserHandler().createUser(request.args))
-
 ###########################################
 #             User                        #
 ###########################################
@@ -54,7 +48,10 @@ def manage_users():
 def manage_user(uid):
     if request.method == 'GET':
         return UserHandler().getUsersById(uid)
-    return jsonify(Error="Method Not Allowed")
+    elif request.method == 'PUT':
+        return UserHandler().updateUser(uid)
+    else:
+        return jsonify(Error="Method Not Allowed")
 
 ###########################################
 #             Contact                     #
@@ -169,6 +166,7 @@ def hashtagById(uid, cid, mid, hid):
 ###########################################
 #             Reactions                   #
 ###########################################
+
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/reactions', methods=['POST', 'GET'])
 def reactions(uid, cid, mid):
     if request.method == 'POST':
@@ -178,7 +176,6 @@ def reactions(uid, cid, mid):
     else:
         return jsonify(Error="Method not allowed")
 
-      
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/reactions/<int:rid>', methods=['GET', 'PUT', 'DELETE'])
 def reactionsById(uid, cid, mid, rid):
     if request.method == 'GET':
@@ -189,6 +186,36 @@ def reactionsById(uid, cid, mid, rid):
         return ReactionsHandler().deleteReactionsById(rid)
     else:
         return jsonify(Error='Method Not Allowed')
+
+
+@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/likes', methods=['GET'])
+def likes_by_mid(mid):
+    if request.method == 'GET':
+        return ReactionsHandler().get_number_of_likes(mid)
+    else:
+        return jsonify(Error='Method Not Allowed')
+
+@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/dislikes', methods=['GET'])
+def dislikes_by_mid(mid):
+    if request.method == 'GET':
+        return ReactionsHandler().get_number_of_dislikes(mid)
+    else:
+        return jsonify(Error='Method Not Allowed')
+
+@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/likes/users', methods=['GET'])
+def users_liked(mid):
+    if request.method == 'GET':
+        return ReactionsHandler().get_users_that_liked(mid)
+    else:
+        return jsonify(Error='Method Not Allowed')
+
+@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/dislikes/users', methods=['GET'])
+def users_disliked(mid):
+    if request.method == 'GET':
+        return ReactionsHandler().get_users_that_disliked(mid)
+    else:
+        return jsonify(Error='Method Not Allowed')
+
 
 ###########################################
 #            Dashboard                    #
@@ -208,6 +235,12 @@ def dashboardById(did):
         return DashboardHandler().updateDashboardById(did, request.form)
     else:
         return jsonify(Error='Method Not Allowed')
+
+
+
+
+
+
 
 
 
