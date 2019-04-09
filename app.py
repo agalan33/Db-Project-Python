@@ -8,25 +8,26 @@ from handlers.chats import ChatsHandler
 from handlers.messages import MessagesHandler
 from handlers.hashtags import HashtagsHandler
 import  json
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route('/')
 def hello_world():
     return 'Welcome to DB Project'
 
+
+
 ###########################################
 #             User                        #
 ###########################################
 
-@app.route('/DbProject/users', methods=['POST'])
+@app.route('/DbProject/create_account', methods=['POST'])
 def manage_account():
     if request.method == 'POST':
         print('Created New User: ', jsonify(request.form))
         return UserHandler().createUser(request.form)
-    else:
-        return jsonify(Error="Method Not Allowed"), 405
 
 @app.route('/DbProject/login', methods=['POST'])
 def login():
@@ -39,33 +40,40 @@ def login():
 @app.route('/DbProject/users', methods=['GET'])
 def manage_users():
     if request.method == 'GET':
-        if not request.args:
+        if not request.data:
             return UserHandler().getAllUsers()
         else:
-            return UserHandler().getUsersById(request.args)
+            row = request.get_json()
+            return UserHandler().getUserByUsername(row['username'])
 
 @app.route('/DbProject/users/<int:uid>', methods=['GET'])
 def manage_user(uid):
     if request.method == 'GET':
         return UserHandler().getUsersById(uid)
-    elif request.method == 'PUT':
-        return UserHandler().updateUser(uid)
-    else:
-        return jsonify(Error="Method Not Allowed")
+    return jsonify(Error="Method Not Allowed")
 
 ###########################################
 #             Contact                     #
 ###########################################
 
+@app.route('/DbProject/contacts', methods=['GET'])
+def manage_all_contacts():
+    if request.method == 'GET':
+        return ContactsHandler().getAllContacts()
+    else:
+        return jsonify(Error="Method Not Allowed"), 405
+
+
 @app.route('/DbProject/users/<int:uid>/contacts', methods=['GET', 'POST'])
 def manage_contacts(uid):
+
     if request.method == 'POST':
-        return jsonify(ContactCreated=ContactsHandler().createContact(request.form))
+        return ContactsHandler().createContact(request.form)
     elif request.method == 'GET':
-        if not request.args:
-            return ContactsHandler().getAllContacts()
+        if not request.data:
+            return ContactsHandler().getAllContactsFromUser(uid)
         else:
-            req = request.args
+            req = request.get_json()
             if 'first_name' not in req:
                 return ContactsHandler().getContactByLastName(req)
 
@@ -77,7 +85,7 @@ def manage_contacts(uid):
 @app.route('/DbProject/users/<int:uid>/contacts/<int:cid>', methods=['GET', 'DELETE'])
 def manage_contact(uid, cid):
     if request.method == 'GET':
-        return ContactsHandler().getContactById(cid)
+        return ContactsHandler().getContactFromUserById(uid, cid)
     if request.method == 'DELETE':
         return ContactsHandler().removeContact(cid)
     else:
@@ -87,15 +95,23 @@ def manage_contact(uid, cid):
 ###########################################
 #             Chats                       #
 ###########################################
-@app.route('/DbProject/users/<int:uid>/chats', methods=['GET', 'POST'])
-def chats(uid):
+@app.route('/DbProject/chats', methods=['GET', 'POST'])
+def chats():
     if request.method == 'POST':
         return ChatsHandler().createChat(request.form)
     elif request.method == 'GET':
         if not request.args:
-            return ChatsHandler().getAllChats()
+            return ChatsHandler().get_all_chats()
         else:
             return ChatsHandler().searchChats(request.args)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/users/<int:uid>/chats', methods=['GET', 'POST'])
+def user_chats(uid):
+    if request.method == 'GET':
+        return ChatsHandler().get_user_chats(uid)
     else:
         return jsonify(Error="Method not allowed"), 405
 
@@ -103,11 +119,27 @@ def chats(uid):
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>', methods=['GET', 'PUT', 'DELETE'])
 def chatById(uid, cid):
     if request.method == 'GET':
-        return ChatsHandler().getChatById(cid)
+        return ChatsHandler().get_chat(cid, uid)
     elif request.method == 'PUT':
         return ChatsHandler().updateChat(cid, request.form)
     elif request.method == 'DELETE':
         return ChatsHandler().deleteChat(cid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/chats/<int:cid>/owner', methods=['GET'])
+def chat_owner(cid):
+    if request.method == 'GET':
+        return ChatsHandler().get_chat_owner(cid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/chats/<int:cid>/users', methods=['GET'])
+def chat_members(cid):
+    if request.method == 'GET':
+        return ChatsHandler().get_chat_users(cid)
     else:
         return jsonify(Error="Method not allowed"), 405
 
@@ -117,11 +149,11 @@ def chatById(uid, cid):
 ###########################################
 
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages', methods=['GET', 'POST'])
-def messages(uid, cid):
+def messages_from_chat(uid, cid):
     if request.method == 'POST':
         return MessagesHandler().createMessage(request.form)
     elif request.method == 'GET':
-        return MessagesHandler().getAllMessages()
+        return MessagesHandler().get_chat_messages(cid)
     else:
         return jsonify(Error="Method not allowed"), 405
 
@@ -129,9 +161,25 @@ def messages(uid, cid):
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>', methods=['GET', 'DELETE'])
 def messageById(uid, cid, mid):
     if request.method == 'GET':
-        return MessagesHandler().getMessageById(mid)
+        return MessagesHandler().get_message(mid)
     elif request.method == 'DELETE':
         return MessagesHandler().deleteMessage(mid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/replies', methods=['GET'])
+def replies(uid, cid, mid):
+    if request.method == 'GET':
+        return MessagesHandler().get_replies(mid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/messages/daily_count', methods=['GET'])
+def posts_per_day():
+    if request.method == 'GET':
+        return MessagesHandler().get_posts_per_day()
     else:
         return jsonify(Error="Method not allowed"), 405
 
@@ -146,26 +194,63 @@ def hashtags(uid, cid, mid):
         return HashtagsHandler().createHashtag(request.form)
     elif request.method == 'GET':
         if not request.args:
-            return HashtagsHandler().getHashtags()
+            return HashtagsHandler().get_hashtags_for_message(mid)
         else:
             return HashtagsHandler().searchHashtag(request.args)
     else:
         return jsonify(Error="Method not allowed"), 405
 
 
-@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/hashtags/<int:hid>', methods=['GET', 'PUT'])
-def hashtagById(uid, cid, mid, hid):
+@app.route('/DbProject/hashtags/<int:hid>', methods=['GET', 'PUT'])
+def hashtagById(hid):
     if request.method == 'GET':
-        return HashtagsHandler().getHashtagById(hid)
+        return HashtagsHandler().get_hashtag_by_id(hid)
     elif request.method == 'PUT':
         return HashtagsHandler().updateHashtag(hid, request.form)
     else:
         return jsonify(Error="Method not allowed"), 405
 
 
+@app.route('/DbProject/hashtags/<int:hid>/times', methods=['GET'])
+def times_used(hid):
+    if request.method == 'GET':
+        return HashtagsHandler().get_times_used(hid)
+    else:
+        return jsonify(Error="Method now allowed"), 405
+
+
+@app.route('/DbProject/hashtags/<int:hid>/messages', methods=['GET'])
+def message_hashtags(hid):
+    if request.method == 'GET':
+        return HashtagsHandler().get_messages_with_hashtag(hid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/hashtags/', methods=['GET'])
+def all_hashtags():
+    if request.method == 'GET':
+        return HashtagsHandler().get_hashtags()
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/hashtags/trending', methods=['GET'])
+def trending_hashtags():
+    if request.method == 'GET':
+        return HashtagsHandler().get_trending()
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
+
+
+
+
 ###########################################
 #             Reactions                   #
 ###########################################
+
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/reactions', methods=['POST', 'GET'])
 def reactions(uid, cid, mid):
     if request.method == 'POST':
@@ -175,8 +260,7 @@ def reactions(uid, cid, mid):
     else:
         return jsonify(Error="Method not allowed")
 
-
-
+      
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/reactions/<int:rid>', methods=['GET', 'PUT', 'DELETE'])
 def reactionsById(uid, cid, mid, rid):
     if request.method == 'GET':
@@ -187,6 +271,52 @@ def reactionsById(uid, cid, mid, rid):
         return ReactionsHandler().deleteReactionsById(rid)
     else:
         return jsonify(Error='Method Not Allowed')
+
+
+@app.route('/DbProject/messages/<int:mid>/likestotal', methods=['GET'])
+def total_message_likes(mid):
+    if request.method == 'GET':
+        return ReactionsHandler().get_number_of_likes(mid)
+    else:
+        return jsonify(Error='Method Not Allowed')
+
+
+@app.route('/DbProject/messages/<int:mid>/dislikestotal', methods=['GET'])
+def total_message_dislikes(mid):
+    if request.method == 'GET':
+        return ReactionsHandler().get_number_of_dislikes(mid)
+    else:
+        return jsonify(Error='Method Not Allowed')
+
+
+@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/likes', methods=['GET'])
+def likes_by_mid(uid, cid, mid):
+    if request.method == 'GET':
+        return ReactionsHandler().get_number_of_likes(mid)
+    else:
+        return jsonify(Error='Method Not Allowed')
+
+@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/dislikes', methods=['GET'])
+def dislikes_by_mid(uid, cid, mid):
+    if request.method == 'GET':
+        return ReactionsHandler().get_number_of_dislikes(mid)
+    else:
+        return jsonify(Error='Method Not Allowed')
+
+@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/likes/users', methods=['GET'])
+def users_liked(uid, cid, mid):
+    if request.method == 'GET':
+        return ReactionsHandler().get_users_that_liked(mid)
+    else:
+        return jsonify(Error='Method Not Allowed')
+
+@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/dislikes/users', methods=['GET'])
+def users_disliked(uid, cid, mid):
+    if request.method == 'GET':
+        return ReactionsHandler().get_users_that_disliked(mid)
+    else:
+        return jsonify(Error='Method Not Allowed')
+
 
 ###########################################
 #            Dashboard                    #
@@ -206,6 +336,7 @@ def dashboardById(did):
         return DashboardHandler().updateDashboardById(did, request.form)
     else:
         return jsonify(Error='Method Not Allowed')
+
 
 
 
