@@ -148,6 +148,14 @@ def chat_members(cid):
 #             Messages                    #
 ###########################################
 
+@app.route('/DbProject/messages', methods=['GET'])
+def messages():
+    if request.method == 'GET':
+        return MessagesHandler().get_all_messages()
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages', methods=['GET', 'POST'])
 def messages_from_chat(uid, cid):
     if request.method == 'POST':
