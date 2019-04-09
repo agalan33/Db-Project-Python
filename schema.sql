@@ -92,3 +92,19 @@ INSERT INTO public.replies (original_id, reply_id) VALUES (5, 6);
 INSERT INTO public.reactions (rid, rlike, rdislike, mid, uid, rdate) VALUES (1, 1, null, 1, 2, '2019-04-09 01:42:27.804627');
 INSERT INTO public.reactions (rid, rlike, rdislike, mid, uid, rdate) VALUES (2, 1, null, 1, 3, '2019-04-09 01:42:49.190614');
 INSERT INTO public.reactions (rid, rlike, rdislike, mid, uid, rdate) VALUES (3, null, 1, 1, 1, '2019-04-09 01:44:15.655632');
+
+/*Hashtags*/
+INSERT INTO hashtags (hid, htext) VALUES (1, '#LA');
+INSERT INTO hashtags (hid, htext) VALUES (2, '#nba');
+INSERT INTO hashtags (hid, htext) VALUES (3, '#playoffs');
+INSERT INTO hashtags (hid, htext) VALUES (4, '#db');
+
+/*contains*/
+INSERT INTO contains (mid, hid) VALUES (3, 4);
+INSERT INTO contains (mid, hid) VALUES (3, 3);
+INSERT INTO contains (mid, hid) VALUES (3, 2);
+INSERT INTO contains (mid, hid) VALUES (3, 1);
+INSERT INTO contains (mid, hid) VALUES (2, 4);
+INSERT INTO contains (mid, hid) VALUES (2, 1);
+INSERT INTO contains (mid, hid) VALUES (1, 4);
+INSERT INTO contains (mid, hid) VALUES (1, 3);
