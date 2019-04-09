@@ -7,7 +7,7 @@ class MessagesDAO:
         connection_url = "dbname=%s user=%s host=%s password=%s" % (pg_config['dbname'],
                                                                     pg_config['user'],
                                                                     pg_config['host'],
-                                                                    pg_config['passwd'])
+                                                                    pg_config['password'])
         self.conn = psycopg2.connect(connection_url)
 
     ###########################################

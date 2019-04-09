@@ -273,6 +273,22 @@ def reactionsById(uid, cid, mid, rid):
         return jsonify(Error='Method Not Allowed')
 
 
+@app.route('/DbProject/messages/<int:mid>/likestotal', methods=['GET'])
+def total_message_likes(mid):
+    if request.method == 'GET':
+        return ReactionsHandler().get_number_of_likes(mid)
+    else:
+        return jsonify(Error='Method Not Allowed')
+
+
+@app.route('/DbProject/messages/<int:mid>/dislikestotal', methods=['GET'])
+def total_message_dislikes(mid):
+    if request.method == 'GET':
+        return ReactionsHandler().get_number_of_dislikes(mid)
+    else:
+        return jsonify(Error='Method Not Allowed')
+
+
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/likes', methods=['GET'])
 def likes_by_mid(uid, cid, mid):
     if request.method == 'GET':

@@ -65,7 +65,7 @@ class ReactionsHandler:
             return jsonify(Error="Message does not exist"), 404
         else:
             message_likes = dao.get_number_of_likes_by_mid(mid)
-            return jsonify(Likes=message_likes)
+            return jsonify(message_likes)
 
     # Get number of likes for message with message id equal to mid
     def get_number_of_dislikes(self, mid):
@@ -76,7 +76,7 @@ class ReactionsHandler:
             return jsonify(Error="Message does not exist"), 404
         else:
             message_dislikes = dao.get_number_of_dislikes_by_mid(mid)
-            return jsonify(Dislikes=message_dislikes)
+            return jsonify(message_dislikes)
 
     # Get total number of likes in the system
     def get_total_likes(self):
