@@ -98,7 +98,7 @@ class ReactionsHandler:
         for user in users:
             dict = self.build_user_dict(user)
             result.append(dict)
-        return jsonify(Users=result)
+        return jsonify(result)
 
     # Get list of users that disliked message with id equal to mid
     def get_users_that_disliked(self, mid):
@@ -108,7 +108,7 @@ class ReactionsHandler:
         for user in users:
             dict = self.build_user_dict(user)
             result.append(dict)
-        return jsonify(Users=result)
+        return jsonify(result)
 
 
 
