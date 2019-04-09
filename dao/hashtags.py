@@ -58,7 +58,7 @@ class HashtagsDAO:
     # Get hashtags contained in message with id equal to mid
     def get_hashtags_per_message(self, mid):
         cursor = self.conn.cursor()
-        query = "SELECT htext FROM contains NATURAL INNER JOIN hashtags WHERE mid = %s;"
+        query = "SELECT hid, htext FROM contains NATURAL INNER JOIN hashtags WHERE mid = %s;"
         cursor.execute(query, (mid,))
         result = []
         for row in cursor:
