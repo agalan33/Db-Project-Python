@@ -119,7 +119,7 @@ def user_chats(uid):
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>', methods=['GET', 'PUT', 'DELETE'])
 def chatById(uid, cid):
     if request.method == 'GET':
-        return ChatsHandler().getChatById(cid)
+        return ChatsHandler().get_chat(cid, uid)
     elif request.method == 'PUT':
         return ChatsHandler().updateChat(cid, request.form)
     elif request.method == 'DELETE':
