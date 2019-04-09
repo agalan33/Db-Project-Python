@@ -59,7 +59,7 @@ class HashtagsDAO:
     def get_hashtags_per_message(self, mid):
         cursor = self.conn.cursor()
         query = "SELECT htext FROM contains NATURAL INNER JOIN hashtags WHERE mid = %s;"
-        cursor.execute(query)
+        cursor.execute(query, (mid,))
         result = []
         for row in cursor:
             result.append(row)
@@ -70,7 +70,7 @@ class HashtagsDAO:
     def get_messages_with_hashtag(self,hid):
         cursor = self.conn.cursor()
         query = "SELECT mid,mtext FROM contains NATURAL INNER JOIN hashtags NATURAL INNER JOIN messages WHERE hid = %s;"
-        cursor.execute(query)
+        cursor.execute(query, (hid,))
         result = []
         for row in cursor:
             result.append(row)
