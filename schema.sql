@@ -66,3 +66,29 @@ INSERT INTO contacts ("ownerid", "contactid") VALUES (2, 1);
 INSERT INTO contacts ("ownerid", "contactid") VALUES (2, 3);
 INSERT INTO contacts ("ownerid", "contactid") VALUES (3, 1);
 INSERT INTO contacts ("ownerid", "contactid") VALUES (3, 2);
+
+/*Chats*/
+INSERT INTO public.chats (cid, cname, uid) VALUES (1, 'testchat1', 1);
+INSERT INTO public.chats (cid, cname, uid) VALUES (2, 'testchat2', 2);
+
+/*isMember*/
+INSERT INTO public.ismember (uid, cid) VALUES (1, 1);
+INSERT INTO public.ismember (uid, cid) VALUES (2, 1);
+INSERT INTO public.ismember (uid, cid) VALUES (3, 1);
+
+/*messages*/
+INSERT INTO public.messages (mid, mimage, mtext, uid, cid, mdate) VALUES (1, 'https://material.angular.io/assets/img/examples/shiba2.jpg', 'Hello, test message', 1, 1, '2019-04-06 18:00:47.487313');
+INSERT INTO public.messages (mid, mimage, mtext, uid, cid, mdate) VALUES (4, null, 'No paso na ahi', 3, 1, '2019-04-06 19:20:43.950704');
+INSERT INTO public.messages (mid, mimage, mtext, uid, cid, mdate) VALUES (6, null, 'Reply to message with id 5', 1, 1, '2019-04-07 16:35:08.664723');
+INSERT INTO public.messages (mid, mimage, mtext, uid, cid, mdate) VALUES (5, '/static/images/image.jpeg', 'Photo from /static folder on flask', 2, 1, '2019-04-07 03:55:23.530286');
+INSERT INTO public.messages (mid, mimage, mtext, uid, cid, mdate) VALUES (3, 'http://images.performgroup.com/di/library/omnisport/cc/db/lebron-james-kobe-bryant-52517-usnews-getty-ftr_1r8z6lo46q6c91k0uvx8eznzvf.jpg?t=1061837212&w=960&quality=70', 'Mmmmm #QuePasoAhi,', 2, 1, '2019-04-06 17:59:56.858107');
+INSERT INTO public.messages (mid, mimage, mtext, uid, cid, mdate) VALUES (2, 'https://cdn-s3.si.com/s3fs-public/styles/marquee_large_2x/public/2019/03/06/lebron-james-lakers-lead-plans.jpg?itok=kHQ4OZ7G', 'Lakers! #StriveForGreatness #LA#2019', 1, 1, '2019-04-06 17:59:56.858107');
+
+/*replies*/
+INSERT INTO public.replies (original_id, reply_id) VALUES (3, 4);
+INSERT INTO public.replies (original_id, reply_id) VALUES (5, 6);
+
+/*reactions*/
+INSERT INTO public.reactions (rid, rlike, rdislike, mid, uid, rdate) VALUES (1, 1, null, 1, 2, '2019-04-09 01:42:27.804627');
+INSERT INTO public.reactions (rid, rlike, rdislike, mid, uid, rdate) VALUES (2, 1, null, 1, 3, '2019-04-09 01:42:49.190614');
+INSERT INTO public.reactions (rid, rlike, rdislike, mid, uid, rdate) VALUES (3, null, 1, 1, 1, '2019-04-09 01:44:15.655632');
