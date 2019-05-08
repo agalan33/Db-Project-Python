@@ -22,7 +22,8 @@ class ChatsDAO:
 
     def get_user_chats(self, uid):
         cursor = self.conn.cursor()
-        query = "select * from chats where cid = (select cid from ismember where uid = %s)"
+        query = "select iM.cid, cname, iM.uid from chats as C inner join isMember iM on C.cid = iM.cid " \
+                "where iM.uid = %s"
         cursor.execute(query, (uid,))
         result = []
         for row in cursor:
@@ -57,3 +58,13 @@ class ChatsDAO:
             result.append(row)
         cursor.close()
         return result
+
+    def create_chat(self, cname, uid):
+        cursor = self.conn.cursor()
+        query = "insert into chats(cname, uid) values (%s, %s) returning cid"
+        cursor.execute(query, (cname, uid,))
+        cid = cursor.fetchone()[0]
+        query = "insert into ismember(uid, cid) values (%s, %s)"
+        cursor.execute(query, (uid, cid,))
+        self.conn.commit()
+        return cid

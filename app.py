@@ -95,11 +95,9 @@ def manage_contact(uid, cid):
 ###########################################
 #             Chats                       #
 ###########################################
-@app.route('/DbProject/chats', methods=['GET', 'POST'])
+@app.route('/DbProject/chats', methods=['GET'])
 def chats():
-    if request.method == 'POST':
-        return ChatsHandler().createChat(request.form)
-    elif request.method == 'GET':
+    if request.method == 'GET':
         if not request.args:
             return ChatsHandler().get_all_chats()
         else:
@@ -112,6 +110,8 @@ def chats():
 def user_chats(uid):
     if request.method == 'GET':
         return ChatsHandler().get_user_chats(uid)
+    elif request.method == 'POST':
+        return ChatsHandler().createChat(request.form, uid)
     else:
         return jsonify(Error="Method not allowed"), 405
 

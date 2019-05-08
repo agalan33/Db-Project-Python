@@ -10,10 +10,16 @@ class ChatsHandler:
         result['uid'] = row[2]
         return result
 
+    def build_chat_attributes(self, cid, cname, uid):
+        result = {}
+        result['cid'] = cid
+        result['cname'] = cname
+        result['uid'] = uid
+        return result
+
     ###########################################
     #             GETS                        #
     ###########################################
-
     def get_all_chats(self):
         dao = ChatsDAO()
         chats_list = dao.get_all_chats()
@@ -30,21 +36,7 @@ class ChatsHandler:
         for row in chats_list:
             result = self.build_chat_dict(row)
             result_list.append(result)
-            return jsonify(result_list)
-
-    def createChat(self, form):
-        if len(form) != 1:
-            return jsonify(Error="Malformed post request"), 400
-        else:
-            cname = form['cname']
-            if cname:
-                result = {
-                    "cid": "4",
-                    "cname": cname
-                }
-                return jsonify(Chats=result), 201
-            else:
-                return jsonify(Error="Unexpected attributes in post request"), 400
+        return jsonify(result_list)
 
     def searchChats(self, args):
         name = args.get('name')
@@ -71,6 +63,18 @@ class ChatsHandler:
     ###########################################
     #             OTHER CRUD                  #
     ###########################################
+    def createChat(self, form, uid):
+        if len(form) != 1:
+            return jsonify(Error="Malformed post request"), 400
+        else:
+            cname = form['cname']
+            if cname:
+                dao = ChatsDAO()
+                cid = dao.create_chat(cname, uid)
+                result = self.build_chat_attributes(cid, cname, uid)
+                return jsonify(Chats=result), 201
+            else:
+                return jsonify(Error="Unexpected attributes in post request"), 400
 
     def updateChat(self, cid, form):
         if len(form) != 1:
