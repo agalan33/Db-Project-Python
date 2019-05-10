@@ -30,7 +30,7 @@ class ChatsHandler:
         for row in chats_list:
             result = self.build_chat_dict(row)
             result_list.append(result)
-            return jsonify(result_list)
+        return jsonify(result_list)
 
     def createChat(self, form):
         if len(form) != 1:

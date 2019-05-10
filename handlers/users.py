@@ -16,19 +16,21 @@ class UserHandler:
         return user
 
     def createUser(self, data):
+        print(len(data))
         if len(data) < 7:
             return jsonify(Error="Missing Information")
-        result = {
-            'uid': 1,
-            'first_name': data['first_name'],
-            'last_name': data['last_name'],
-            'email': data['email'],
-            'username': data['username'],
-            'password': data['password'],
-            'age': data['age'],
-            'phone_number': data['phone_number']
-        }
-        return jsonify(CreatedUser = result)
+        firstname = data["first_name"]
+        lastname = data["last_name"]
+        email = data["email"]
+        username = data["username"]
+        password = data["password"]
+        age = data["age"]
+        phone_number = data["phone_number"]
+        print(firstname)
+        dao = UsersDao()
+        uid = dao.createAccount(firstname, lastname, email, username, password, age, phone_number)
+        print(uid)
+        return jsonify(CreatedUser = uid)
       
     def login(self, data):
         result = {

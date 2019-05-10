@@ -26,8 +26,8 @@ def hello_world():
 @app.route('/DbProject/create_account', methods=['POST'])
 def manage_account():
     if request.method == 'POST':
-        print('Created New User: ', jsonify(request.form))
-        return UserHandler().createUser(request.form)
+        print('Created New User: ', jsonify(request.json))
+        return UserHandler().createUser(request.json)
 
 @app.route('/DbProject/login', methods=['POST'])
 def login():

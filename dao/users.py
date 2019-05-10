@@ -35,3 +35,13 @@ class UsersDao:
         cursor.execute(query, (uid,))
         result = cursor.fetchone()
         return result
+
+    def createAccount(self, first_name, last_name, email, username, password, age, phone_number):
+        cursor = self.conn.cursor()
+        query = "insert into users (username, ufirst_name,ulast_name,uemail,upassword, uphone, uage) " \
+                "values (%s,%s,%s,%s,%s, %s, %s) returning uid;"
+        cursor.execute(query, (username, first_name, last_name, email, password, phone_number, age,))
+        uid = cursor.fetchone()[0]
+        self.conn.commit()
+        return uid
+
