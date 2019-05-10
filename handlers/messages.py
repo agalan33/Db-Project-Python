@@ -1,5 +1,7 @@
 from flask import jsonify
 from dao.messages import MessagesDAO
+from dao.users import UsersDao
+import sys
 
 
 class MessagesHandler:
@@ -22,6 +24,18 @@ class MessagesHandler:
         result['mtext'] = row[2]
         result['mdate'] = row[3]
         result['uid'] = row[4]
+        return result
+
+    def build_message_dict_attributes(self, mid, mimage, mtext, uid, cid, mdate, ufirst_name, ulast_name):
+        result = {}
+        result['mid'] = mid
+        result['mimage'] = mimage
+        result['mtext'] = mtext
+        result['mdate'] = mdate
+        result['uid'] = uid
+        result['cid'] = cid
+        result['ufirst_name'] = ufirst_name
+        result['ulast_name'] = ulast_name
         return result
 
     def build_daily_posts_count_dict(self, row):
@@ -91,17 +105,23 @@ class MessagesHandler:
         }
         return jsonify(DeleteStatus="OK"), 200
 
-    def createMessage(self, form):
+    def createMessage(self, form, uid, cid):
+        print(form, file=sys.stderr)
         if len(form) == 2:
             image = form["mimage"]
             text = form["mtext"]
             if image and text:
-                msgCreated = {
-                    "mid": "4",
-                    "mimage": image,
-                    "mtext": text
-                }
-                return jsonify(Messages=msgCreated), 201
+                dao = MessagesDAO()
+                udao = UsersDao()
+                row = dao.post_message(image, text, uid, cid)
+                mid = row[0]
+                mdate = row[1]
+                fullname = udao.get_fullname(uid)
+                ufirst_name = fullname[0]
+                ulast_name = fullname[1]
+                new_message = self.build_message_dict_attributes(mid, image, text, uid, cid, mdate,
+                                                                 ufirst_name, ulast_name)
+                return jsonify(new_message), 201
             else:
                 return jsonify(Error="Unexpected attributes in post request"), 400
         else:

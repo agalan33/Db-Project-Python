@@ -69,3 +69,16 @@ class MessagesDAO:
             result.append(row)
         cursor.close()
         return result
+
+    ###########################################
+    #             POST                        #
+    ###########################################
+    def post_message(self, mimage, mtext, uid, cid):
+        cursor = self.conn.cursor()
+        query = "insert into messages (mimage, mtext, uid, cid) values (%s, %s, %s, %s) returning mid, mdate"
+        cursor.execute(query, (mimage, mtext, uid, cid,))
+        result = cursor.fetchone()
+        self.conn.commit()
+        cursor.close()
+        return result
+

@@ -1,5 +1,6 @@
 from flask import jsonify
 from dao.chats import ChatsDAO
+import sys
 
 
 class ChatsHandler:
@@ -72,7 +73,7 @@ class ChatsHandler:
                 dao = ChatsDAO()
                 cid = dao.create_chat(cname, uid)
                 result = self.build_chat_attributes(cid, cname, uid)
-                return jsonify(Chats=result), 201
+                return jsonify(result), 201
             else:
                 return jsonify(Error="Unexpected attributes in post request"), 400
 

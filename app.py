@@ -159,7 +159,7 @@ def messages():
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages', methods=['GET', 'POST'])
 def messages_from_chat(uid, cid):
     if request.method == 'POST':
-        return MessagesHandler().createMessage(request.form)
+        return MessagesHandler().createMessage(request.form, uid, cid)
     elif request.method == 'GET':
         return MessagesHandler().get_chat_messages(cid)
     else:

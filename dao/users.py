@@ -35,3 +35,11 @@ class UsersDao:
         cursor.execute(query, (uid,))
         result = cursor.fetchone()
         return result
+
+    def get_fullname(self, uid):
+        cursor = self.conn.cursor()
+        query = "select ufirst_name, ulast_name from users where uid = %s"
+        cursor.execute(query, (uid,))
+        result = cursor.fetchone()
+        cursor.close()
+        return result
