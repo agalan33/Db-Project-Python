@@ -251,10 +251,6 @@ def trending_hashtags():
         return jsonify(Error="Method not allowed"), 405
 
 
-
-
-
-
 ###########################################
 #             Reactions                   #
 ###########################################
@@ -262,11 +258,19 @@ def trending_hashtags():
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/reactions', methods=['POST', 'GET'])
 def reactions(uid, cid, mid):
     if request.method == 'POST':
-        return ReactionsHandler().createReaction(request.form)
+        return ReactionsHandler().insert_reaction(request.form, uid, mid)
     elif request.method == 'GET':
         return ReactionsHandler().getReactions()
     else:
-        return jsonify(Error="Method not allowed")
+        return jsonify(Error="Method not allowed"), 405
+
+
+@app.route('/DbProject/messages/<int:mid>/reactions/users/<int:uid>', methods=['GET'])
+def reactions_by_id(mid, uid):
+    if request.method == 'GET':
+        return ReactionsHandler().get_user_reaction(mid, uid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
 
       
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/reactions/<int:rid>', methods=['GET', 'PUT', 'DELETE'])
@@ -278,7 +282,7 @@ def reactionsById(uid, cid, mid, rid):
     elif request.method == 'DELETE':
         return ReactionsHandler().deleteReactionsById(rid)
     else:
-        return jsonify(Error='Method Not Allowed')
+        return jsonify(Error='Method Not Allowed'), 405
 
 
 @app.route('/DbProject/messages/<int:mid>/likestotal', methods=['GET'])
@@ -286,7 +290,7 @@ def total_message_likes(mid):
     if request.method == 'GET':
         return ReactionsHandler().get_number_of_likes(mid)
     else:
-        return jsonify(Error='Method Not Allowed')
+        return jsonify(Error='Method Not Allowed'), 405
 
 
 @app.route('/DbProject/messages/<int:mid>/dislikestotal', methods=['GET'])
@@ -294,7 +298,7 @@ def total_message_dislikes(mid):
     if request.method == 'GET':
         return ReactionsHandler().get_number_of_dislikes(mid)
     else:
-        return jsonify(Error='Method Not Allowed')
+        return jsonify(Error='Method Not Allowed'), 405
 
 
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/likes', methods=['GET'])
@@ -302,28 +306,31 @@ def likes_by_mid(uid, cid, mid):
     if request.method == 'GET':
         return ReactionsHandler().get_number_of_likes(mid)
     else:
-        return jsonify(Error='Method Not Allowed')
+        return jsonify(Error='Method Not Allowed'), 405
+
 
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/dislikes', methods=['GET'])
 def dislikes_by_mid(uid, cid, mid):
     if request.method == 'GET':
         return ReactionsHandler().get_number_of_dislikes(mid)
     else:
-        return jsonify(Error='Method Not Allowed')
+        return jsonify(Error='Method Not Allowed'), 405
+
 
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/likes/users', methods=['GET'])
 def users_liked(uid, cid, mid):
     if request.method == 'GET':
         return ReactionsHandler().get_users_that_liked(mid)
     else:
-        return jsonify(Error='Method Not Allowed')
+        return jsonify(Error='Method Not Allowed'), 405
+
 
 @app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/dislikes/users', methods=['GET'])
 def users_disliked(uid, cid, mid):
     if request.method == 'GET':
         return ReactionsHandler().get_users_that_disliked(mid)
     else:
-        return jsonify(Error='Method Not Allowed')
+        return jsonify(Error='Method Not Allowed'),405
 
 
 ###########################################
@@ -335,7 +342,7 @@ def dashboard():
     if request.method == 'GET':
         return DashboardHandler().getDashboard()
     else:
-        return jsonify(Error='Method Not Allowed')
+        return jsonify(Error='Method Not Allowed'), 405
 
 
 @app.route('/DbProject/dashboard/<int:did>', methods=['PUT'])
@@ -343,15 +350,7 @@ def dashboardById(did):
     if request.method == 'PUT':
         return DashboardHandler().updateDashboardById(did, request.form)
     else:
-        return jsonify(Error='Method Not Allowed')
-
-
-
-
-
-
-
-
+        return jsonify(Error='Method Not Allowed'), 405
 
 
 if __name__ == '__main__':

@@ -13,8 +13,6 @@ class ReactionsDAO:
     ###########################################
     #               GETS                      #
     ###########################################
-
-
     # Get all reactions in system
     def get_all_reactions(self):
         cursor = self.conn.cursor()
@@ -92,4 +90,34 @@ class ReactionsDAO:
             result.append(row)
         cursor.close()
         return result
+
+    def get_user_reaction(self, mid, uid):
+        cursor = self.conn.cursor()
+        query = "select rid, rlike, rdislike, uid, mid, rdate from reactions where mid = %s and uid = %s"
+        cursor.execute(query, (mid, uid,))
+        row = cursor.fetchone()
+        cursor.close()
+        return row
+
+    ###########################################
+    #               CRUD                      #
+    ###########################################
+    def insert_reaction(self, rlike, rdislike, mid, uid):
+        cursor = self.conn.cursor()
+        query = "insert into reactions (rlike, rdislike, mid, uid) VALUES (%s, %s, %s, %s) returning rid, rdate"
+        cursor.execute(query, (rlike, rdislike, mid, uid,))
+        result = cursor.fetchone()
+        self.conn.commit()
+        cursor.close()
+        return result
+
+    def update_reaction(self, rid, rlike, rdislike):
+        cursor = self.conn.cursor()
+        query = "update reactions " \
+                "set rlike = %s, rdislike = %s " \
+                "where rid = %s"
+        cursor.execute(query, (rlike, rdislike, rid,))
+        self.conn.commit()
+        cursor.close()
+        return 'OK'
 
