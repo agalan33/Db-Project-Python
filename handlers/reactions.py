@@ -23,6 +23,12 @@ class ReactionsHandler:
         result['rdate'] = row[3]
         return result
 
+    def build_total_dict(self, row):
+        result = {}
+        result['date'] = row[0]
+        result['count'] = row[1]
+        return result
+
     def createReaction(self, form):
         result = {
             'rid' : 0,
@@ -109,6 +115,24 @@ class ReactionsHandler:
             dict = self.build_user_dict(user)
             result.append(dict)
         return jsonify(result)
+
+    def get_total_likes_per_day(self):
+        dao = ReactionsDAO()
+        likes = dao.get_likes_per_day()
+        result_list = []
+        for row in likes:
+            result = self.build_total_dict(row)
+            result_list.append(result)
+        return jsonify(result_list)
+
+    def get_total_dislikes_per_day(self):
+        dao = ReactionsDAO()
+        dislikes = dao.get_dislikes_per_day()
+        result_list = []
+        for row in dislikes:
+            result = self.build_total_dict(row)
+            result_list.append(result)
+        return jsonify(result_list)
 
 
 

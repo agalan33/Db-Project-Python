@@ -11,8 +11,9 @@ class HashtagsHandler:
 
     def build_trending_dict(self, row):
         result = {}
-        result['htext'] = row[0]
-        result['position'] = row[1]
+        result['position'] = row[0]
+        result['htext'] = row[1]
+        result['count'] = row[2]
         return result
 
     def build_hashtag_dict(self, row):
@@ -51,7 +52,7 @@ class HashtagsHandler:
         for hashtag in trending:
             dict = self.build_trending_dict(hashtag)
             result.append(dict)
-        return jsonify(Trending=result)
+        return jsonify(result)
 
     # Get hashtags contained in message with id equal to mid
     def get_hashtags_for_message(self, mid):

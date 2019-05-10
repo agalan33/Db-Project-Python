@@ -183,11 +183,31 @@ def replies(uid, cid, mid):
     else:
         return jsonify(Error="Method not allowed"), 405
 
+@app.route('/DbProject/replies/daily_count', methods=['GET'])
+def replies_per_day():
+    if request.method == 'GET':
+        return MessagesHandler().get_replies_per_day()
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+@app.route('/DbProject/message/<int:mid>/replies', methods=['GET'])
+def number_replies_for_message(mid):
+    if request.method == 'GET':
+        return MessagesHandler().get_number_replies_for_post(mid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
 
 @app.route('/DbProject/messages/daily_count', methods=['GET'])
 def posts_per_day():
     if request.method == 'GET':
         return MessagesHandler().get_posts_per_day()
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+@app.route('/DbProject/messages/users/<int:uid>', methods=['GET'])
+def posts_per_day_from_user(uid):
+    if request.method == 'GET':
+        return MessagesHandler().get_posts_per_day_by_user(uid)
     else:
         return jsonify(Error="Method not allowed"), 405
 
@@ -325,6 +345,19 @@ def users_disliked(uid, cid, mid):
     else:
         return jsonify(Error='Method Not Allowed')
 
+@app.route('/DbProject/dailyLikes', methods=['GET'])
+def daily_likes():
+    if request.method == 'GET':
+        return ReactionsHandler().get_total_likes_per_day()
+    else:
+        return jsonify(Error='Method Not Allowed')
+
+@app.route('/DbProject/dailyDislikes', methods=['GET'])
+def daily_dislikes():
+    if request.method == 'GET':
+        return ReactionsHandler().get_total_dislikes_per_day()
+    else:
+        return jsonify(Error='Method Not Allowed')
 
 ###########################################
 #            Dashboard                    #

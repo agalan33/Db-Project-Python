@@ -35,3 +35,14 @@ class UsersDao:
         cursor.execute(query, (uid,))
         result = cursor.fetchone()
         return result
+
+    # Get most active users in the system
+    def get_most_active_users(self):
+        cursor = self.conn.cursor()
+        query = "SELECT distinct date(mdate), username, count(username) FROM messages NATURAL INNER JOIN users GROUP BY date(mdate),username ORDER BY COUNT(username) DESC;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
