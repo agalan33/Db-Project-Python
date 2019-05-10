@@ -40,14 +40,6 @@ class UserHandler:
         }
         return jsonify(LoggedIn = result)
 
-    def updateUser(self,data,uid):
-        result = {
-            'uid': uid,
-            'email': data['email']
-        }
-        return jsonify(UpdatedUser = result)
-
-
     def getUsersById(self, uid):
         dao = UsersDao()
         result = dao.getUserById(uid)
@@ -69,3 +61,8 @@ class UserHandler:
         result = dao.getUserByUsername(username)
         result = self.map_to_User(result)
         return jsonify(result)
+
+    def updateUser(self, data):
+        dao = UsersDao()
+        result = dao.updateUser(data['uid'], data['first_name'], data['last_name'], data['email'] , data['username'] , data['password'], data['age'], data['phone_number'])
+        return jsonify(Result=result)

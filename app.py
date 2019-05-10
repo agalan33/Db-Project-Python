@@ -48,6 +48,14 @@ def login(uid):
         loggedUID = uid
         return jsonify("Logged in")
 
+@app.route('/DbProject/logout')
+def logout():
+    global isLoggedIn
+    global loggedUID
+    isLoggedIn = False
+    loggedUID = 0
+    return jsonify("Logged out")
+
 @app.route('/DbProject/users', methods=['GET'])
 def manage_users():
     if request.method == 'GET':
@@ -57,10 +65,12 @@ def manage_users():
             row = request.get_json()
             return UserHandler().getUserByUsername(row['username'])
 
-@app.route('/DbProject/users/<int:uid>', methods=['GET'])
+@app.route('/DbProject/users/<int:uid>', methods=['GET', 'PUT'])
 def manage_user(uid):
     if request.method == 'GET':
         return UserHandler().getUsersById(uid)
+    elif request.method == 'PUT':
+        return UserHandler().updateUser(request.json)
     return jsonify(Error="Method Not Allowed")
 
 @app.route('/DbProject/users/username/<username>', methods=['GET'])
@@ -81,11 +91,11 @@ def manage_all_contacts():
         return jsonify(Error="Method Not Allowed"), 405
 
 
-@app.route('/DbProject/users/<int:uid>/contacts', methods=['GET', 'POST'])
+@app.route('/DbProject/users/<int:uid>/contacts', methods=['GET', 'POST', 'DELETE'])
 def manage_contacts(uid):
 
     if request.method == 'POST':
-        return ContactsHandler().createContact(request.form)
+        return ContactsHandler().createContact(request.json)
     elif request.method == 'GET':
         if not request.data:
             return ContactsHandler().getAllContactsFromUser(uid)
@@ -95,6 +105,8 @@ def manage_contacts(uid):
                 return ContactsHandler().getContactByLastName(req)
 
             return ContactsHandler().getContactByFirstName(req)
+    elif request.method == 'DELETE':
+        return ContactsHandler().removeContact(request.json)
     else:
         return jsonify(Error="Method Not Allowed"), 405
 

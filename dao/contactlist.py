@@ -52,3 +52,20 @@ class ContactsDao:
         cursor.execute(query, (uid, cid,))
         result = cursor.fetchone()
         return result
+
+    def createContact(self, ownerid, contactid):
+        cursor = self.conn.cursor()
+        query = "insert into contacts (ownerid, contactid) " \
+                "values (%s,%s) returning contactid;"
+        cursor.execute(query, (ownerid, contactid,))
+        uid = cursor.fetchone()[0]
+        print(uid)
+        self.conn.commit()
+        return uid
+
+    def removeContact(self, ownerid, contactid):
+        cursor = self.conn.cursor()
+        query = "delete from contacts where ownerid = %s and contactid = %s;"
+        cursor.execute(query, (ownerid, contactid))
+        self.conn.commit()
+        return "Successful"
