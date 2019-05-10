@@ -11,39 +11,34 @@ class UserHandler:
         user['ufirst_name'] = row[2]
         user['ulast_name'] = row[3]
         user['uemail'] = row[4]
-        user['uphone'] = row[5]
-        user['uage'] = row[6]
+        user['upassword'] = row[5]
+        user['uphone'] = row[6]
+        user['uage'] = row[7]
         return user
 
     def createUser(self, data):
+        print(len(data))
         if len(data) < 7:
             return jsonify(Error="Missing Information")
-        result = {
-            'uid': 1,
-            'first_name': data['first_name'],
-            'last_name': data['last_name'],
-            'email': data['email'],
-            'username': data['username'],
-            'password': data['password'],
-            'age': data['age'],
-            'phone_number': data['phone_number']
-        }
-        return jsonify(CreatedUser = result)
+        firstname = data["first_name"]
+        lastname = data["last_name"]
+        email = data["email"]
+        username = data["username"]
+        password = data["password"]
+        age = data["age"]
+        phone_number = data["phone_number"]
+        print(firstname)
+        dao = UsersDao()
+        uid = dao.createAccount(firstname, lastname, email, username, password, age, phone_number)
+        print(uid)
+        return jsonify(CreatedUser = uid)
       
     def login(self, data):
         result = {
             'email': data['email'],
             'password': data['password'],
         }
-        return jsonify(LoggedIn = result)
-
-    def updateUser(self,data,uid):
-        result = {
-            'uid': uid,
-            'email': data['email']
-        }
-        return jsonify(UpdatedUser = result)
-
+        return jsonify(result)
 
     def getUsersById(self, uid):
         dao = UsersDao()
@@ -66,3 +61,8 @@ class UserHandler:
         result = dao.getUserByUsername(username)
         result = self.map_to_User(result)
         return jsonify(result)
+
+    def updateUser(self, data):
+        dao = UsersDao()
+        result = dao.updateUser(data['uid'], data['first_name'], data['last_name'], data['email'] , data['username'] , data['password'], data['age'], data['phone_number'])
+        return jsonify(Result=result)

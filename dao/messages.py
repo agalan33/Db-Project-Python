@@ -72,7 +72,7 @@ class MessagesDAO:
 
     def get_posts_per_day_by_user(self, uid):
         cursor = self.conn.cursor()
-        query = "select date(mdate), count(*) from messages group by date(mdate) WHERE uid = %s"
+        query = "select date(mdate), count(*) from messages where uid = %s group by date(mdate) ORDER BY date(mdate);"
         cursor.execute(query, (uid,))
         result = []
         for row in cursor:

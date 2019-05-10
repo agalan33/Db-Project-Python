@@ -34,20 +34,13 @@ class ContactsHandler:
         return jsonify(result)
 
     def createContact(self, data):
-        result = {}
-        if 'phone_number' not in data:
-            result['phone_number'] = ''
-        else:
-            result['phone_number'] = '797-777-7777'
-        if 'email' not in data:
-            result['email'] = ''
-        else:
-            result['email'] = 'email@email.com'
-        result['cid'] = 1
-        result['first_name'] = 'ed'
-        result['last_name'] = 'jones'
-
-        return jsonify(result)
+        ownerid = data['ownerid']
+        contactid = data['contactid']
+        print(ownerid)
+        print(contactid)
+        dao = ContactsDao()
+        cid = dao.createContact(ownerid, contactid)
+        return jsonify(Contactid=cid)
 
     def getAllContacts(self):
         dao = ContactsDao()
@@ -67,13 +60,10 @@ class ContactsHandler:
         return jsonify(mapped_result)
 
 
-    def removeContact(self, cid):
-        contact1 = {
-            'cid': cid,
-            'first_name': 'Manuel',
-            'last_name': 'Rodriguez',
-            'email': 'manuel.rodriguez@upr.edu',
-            'phone_number': '787-000-0000'
-        }
-        return jsonify(Deleted = contact1)
+    def removeContact(self, data):
+        ownerid = data['ownerid']
+        contactid = data['contactid']
+        dao = ContactsDao()
+        result = dao.removeContact(ownerid, contactid)
+        return jsonify(Deleted=result)
 

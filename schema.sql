@@ -1,3 +1,21 @@
+drop table if exists contacts;
+
+drop table if exists ismember;
+
+drop table if exists replies;
+
+drop table if exists reactions;
+
+drop table if exists contains;
+
+drop table if exists messages;
+
+drop table if exists chats;
+
+drop table if exists users;
+
+drop table if exists hashtags;
+
 
 CREATE TABLE users(uid serial primary key , username varchar(10), ufirst_name varchar(20), ulast_name varchar(20), uemail varchar(30), upassword varchar (15),
 uphone varchar(30), uage int);

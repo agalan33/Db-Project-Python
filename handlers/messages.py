@@ -108,7 +108,7 @@ class MessagesHandler:
         for row in count_list:
             result = self.build_daily_posts_count_dict(row)
             result_list.append(result)
-        return jsonify(PostsPerDay=result_list)
+        return jsonify(result_list)
 
     ###########################################
     #             OTHER CRUD                  #

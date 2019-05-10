@@ -12,30 +12,49 @@ from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 CORS(app)
+loggedUID = 1
+isLoggedIn = False
 
 @app.route('/')
 def hello_world():
     return 'Welcome to DB Project'
 
-
-
 ###########################################
 #             User                        #
 ###########################################
 
+@app.route('/DbProject/userstatus', methods=['GET'])
+def status():
+    global isLoggedIn
+    if isLoggedIn:
+        return UserHandler().getUsersById(loggedUID)
+    else:
+        return jsonify("Logged in")
+
 @app.route('/DbProject/create_account', methods=['POST'])
 def manage_account():
     if request.method == 'POST':
-        print('Created New User: ', jsonify(request.form))
-        return UserHandler().createUser(request.form)
+        print('Created New User: ', jsonify(request.json))
+        return UserHandler().createUser(request.json)
 
-@app.route('/DbProject/login', methods=['POST'])
-def login():
-    if request.method == 'POST':
-        print('Logged in: ', jsonify(request.form))
-        return UserHandler().login(request.form)
+@app.route('/DbProject/login/<int:uid>')
+def login(uid):
+    global isLoggedIn
+    global loggedUID
+    if isLoggedIn:
+        return jsonify("Already Logged in")
     else:
-        return jsonify(Error="Method Not Allowed"), 405
+        isLoggedIn = True
+        loggedUID = uid
+        return jsonify("Logged in")
+
+@app.route('/DbProject/logout')
+def logout():
+    global isLoggedIn
+    global loggedUID
+    isLoggedIn = False
+    loggedUID = 0
+    return jsonify("Logged out")
 
 @app.route('/DbProject/users', methods=['GET'])
 def manage_users():
@@ -46,10 +65,18 @@ def manage_users():
             row = request.get_json()
             return UserHandler().getUserByUsername(row['username'])
 
-@app.route('/DbProject/users/<int:uid>', methods=['GET'])
+@app.route('/DbProject/users/<int:uid>', methods=['GET', 'PUT'])
 def manage_user(uid):
     if request.method == 'GET':
         return UserHandler().getUsersById(uid)
+    elif request.method == 'PUT':
+        return UserHandler().updateUser(request.json)
+    return jsonify(Error="Method Not Allowed")
+
+@app.route('/DbProject/users/username/<username>', methods=['GET'])
+def manage_user_username(username):
+    if request.method == 'GET':
+        return UserHandler().getUserByUsername(username)
     return jsonify(Error="Method Not Allowed")
 
 ###########################################
@@ -64,11 +91,11 @@ def manage_all_contacts():
         return jsonify(Error="Method Not Allowed"), 405
 
 
-@app.route('/DbProject/users/<int:uid>/contacts', methods=['GET', 'POST'])
+@app.route('/DbProject/users/<int:uid>/contacts', methods=['GET', 'POST', 'DELETE'])
 def manage_contacts(uid):
 
     if request.method == 'POST':
-        return ContactsHandler().createContact(request.form)
+        return ContactsHandler().createContact(request.json)
     elif request.method == 'GET':
         if not request.data:
             return ContactsHandler().getAllContactsFromUser(uid)
@@ -78,6 +105,8 @@ def manage_contacts(uid):
                 return ContactsHandler().getContactByLastName(req)
 
             return ContactsHandler().getContactByFirstName(req)
+    elif request.method == 'DELETE':
+        return ContactsHandler().removeContact(request.json)
     else:
         return jsonify(Error="Method Not Allowed"), 405
 
