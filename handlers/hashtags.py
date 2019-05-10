@@ -89,10 +89,6 @@ class HashtagsHandler:
             result.append(dict)
         return jsonify(Messages=result)
 
-
-
-
-
     def searchHashtag(self, args):
         text = args.get('htext')
         result_list = []
@@ -106,7 +102,6 @@ class HashtagsHandler:
         else:
             return jsonify(Error="Malformed query string"), 400
         return jsonify(Hashtag=result_list)
-
 
     def createHashtag(self, form):
         text = form['htext']
@@ -123,7 +118,6 @@ class HashtagsHandler:
                 return jsonify(Error="Unexpected attributes in post request"), 400
         else:
             return jsonify(Error="Malformed update request"), 400
-
 
     def updateHashtag(self, hid, form):
         text = form['htext']

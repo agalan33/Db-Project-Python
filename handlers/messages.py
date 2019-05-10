@@ -1,6 +1,8 @@
 from flask import jsonify
 from dao.messages import MessagesDAO
 from dao.users import UsersDao
+from dao.hashtags import HashtagsDAO
+from handlers.hashtags import HashtagsHandler
 import sys
 
 
@@ -121,6 +123,13 @@ class MessagesHandler:
                 ulast_name = fullname[1]
                 new_message = self.build_message_dict_attributes(mid, image, text, uid, cid, mdate,
                                                                  ufirst_name, ulast_name)
+                hash_handler = HashtagsHandler()
+                hash_dao = HashtagsDAO()
+                for htext in hash_handler.get_mtext_hashtags(text):
+                    hid = hash_dao.search_hashtag(htext)
+                    if not hid:
+                        hid = hash_dao.post_hashtag(htext)
+                    hash_dao.insert_message_contains_hashtag(mid, hid)
                 return jsonify(new_message), 201
             else:
                 return jsonify(Error="Unexpected attributes in post request"), 400
