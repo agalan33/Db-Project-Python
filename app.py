@@ -12,16 +12,24 @@ from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 CORS(app)
+loggedUID = 1
+isLoggedIn = False
 
 @app.route('/')
 def hello_world():
     return 'Welcome to DB Project'
 
-
-
 ###########################################
 #             User                        #
 ###########################################
+
+@app.route('/DbProject/userstatus', methods=['GET'])
+def status():
+    global isLoggedIn
+    if isLoggedIn:
+        return UserHandler().getUsersById(loggedUID)
+    else:
+        return jsonify("Logged in")
 
 @app.route('/DbProject/create_account', methods=['POST'])
 def manage_account():
@@ -29,13 +37,16 @@ def manage_account():
         print('Created New User: ', jsonify(request.json))
         return UserHandler().createUser(request.json)
 
-@app.route('/DbProject/login', methods=['POST'])
-def login():
-    if request.method == 'POST':
-        print('Logged in: ', jsonify(request.form))
-        return UserHandler().login(request.form)
+@app.route('/DbProject/login/<int:uid>')
+def login(uid):
+    global isLoggedIn
+    global loggedUID
+    if isLoggedIn:
+        return jsonify("Already Logged in")
     else:
-        return jsonify(Error="Method Not Allowed"), 405
+        isLoggedIn = True
+        loggedUID = uid
+        return jsonify("Logged in")
 
 @app.route('/DbProject/users', methods=['GET'])
 def manage_users():
@@ -50,6 +61,12 @@ def manage_users():
 def manage_user(uid):
     if request.method == 'GET':
         return UserHandler().getUsersById(uid)
+    return jsonify(Error="Method Not Allowed")
+
+@app.route('/DbProject/users/username/<username>', methods=['GET'])
+def manage_user_username(username):
+    if request.method == 'GET':
+        return UserHandler().getUserByUsername(username)
     return jsonify(Error="Method Not Allowed")
 
 ###########################################

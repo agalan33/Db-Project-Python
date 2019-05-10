@@ -24,7 +24,7 @@ class UsersDao:
 
     def getUserByUsername(self, username):
         cursor = self.conn.cursor()
-        query = "select * from users where username = %s;"
+        query = "select uid, username, ufirst_name, ulast_name, uemail, upassword, uphone, uage from users where username = %s;"
         cursor.execute(query, (username,))
         result = cursor.fetchone()
         return result
