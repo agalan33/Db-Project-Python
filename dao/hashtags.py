@@ -29,7 +29,7 @@ class HashtagsDAO:
     # Get top 10 hashtags and respective position depending on times used
     def get_trending_hashtags(self):
         cursor = self.conn.cursor()
-        query = "SELECT htext, ROW_NUMBER () OVER (ORDER BY COUNT(htext) DESC) FROM contains NATURAL INNER JOIN hashtags GROUP BY htext ORDER BY COUNT(htext) DESC FETCH FIRST 10 ROWS ONLY;"
+        query = "SELECT ROW_NUMBER () OVER (ORDER BY COUNT(htext) DESC), htext, COUNT(htext) FROM contains NATURAL INNER JOIN hashtags GROUP BY htext ORDER BY COUNT(htext) DESC FETCH FIRST 5 ROWS ONLY;"
         cursor.execute(query)
         result = []
         for row in cursor:

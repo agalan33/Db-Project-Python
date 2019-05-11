@@ -60,10 +60,38 @@ class MessagesDAO:
 
     def get_posts_per_day(self):
         cursor = self.conn.cursor()
-        query = "select date(mdate), count(*) " \
-                "from messages " \
-                "group by date(mdate)"
+        query = "select date(mdate), count(*) from messages group by date(mdate) order by date(mdate);"
         cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
+    def get_posts_per_day_by_user(self, uid):
+        cursor = self.conn.cursor()
+        query = "select date(mdate), count(*) from messages where uid = %s group by date(mdate) ORDER BY date(mdate);"
+        cursor.execute(query, (uid,))
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
+    def get_replies_per_day(self):
+        cursor = self.conn.cursor()
+        query = "SELECT date(mdate), COUNT(*) FROM messages AS M INNER JOIN replies AS R ON M.mid = R.reply_id GROUP BY date(mdate) ORDER BY date(mdate);"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
+    def get_number_replies_for_post(self, mid):
+        cursor = self.conn.cursor()
+        query = "SELECT COUNT(*) FROM messages AS M INNER JOIN replies AS R ON M.mid = R.original_id WHERE M.mid = 5;"
+        cursor.execute(query, (mid,))
         result = []
         for row in cursor:
             result.append(row)

@@ -99,6 +99,7 @@ class ReactionsDAO:
         cursor.close()
         return row
 
+
     ###########################################
     #               CRUD                      #
     ###########################################
@@ -120,4 +121,27 @@ class ReactionsDAO:
         self.conn.commit()
         cursor.close()
         return 'OK'
+
+    # Get number of likes in the system per day
+    def get_likes_per_day(self):
+        cursor = self.conn.cursor()
+        query = "SELECT date(rdate), COUNT(*) FROM reactions WHERE rlike = 1 GROUP BY date(rdate) ORDER BY date(rdate);"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
+    # Get number of dislikes in the system per day
+    def get_dislikes_per_day(self):
+        cursor = self.conn.cursor()
+        query = "SELECT date(rdate), COUNT(*) FROM reactions WHERE rdislike = 1 GROUP BY date(rdate) ORDER BY date(rdate);"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
 

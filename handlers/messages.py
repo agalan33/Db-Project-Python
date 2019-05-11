@@ -53,8 +53,13 @@ class MessagesHandler:
 
     def build_daily_posts_count_dict(self, row):
         result = {}
-        result['day'] = row[0]
-        result['total'] = row[1]
+        result['date'] = row[0]
+        result['count'] = row[1]
+        return result
+
+    def build_count_dict(self, row):
+        result = {}
+        result['count'] = row[0]
         return result
 
     ###########################################
@@ -97,6 +102,23 @@ class MessagesHandler:
             result_list.append(result)
         return jsonify(result_list)
 
+    def get_replies_per_day(self):
+        dao = MessagesDAO()
+        count_list = dao.get_replies_per_day()
+        result_list = []
+        for row in count_list:
+            result = self.build_daily_posts_count_dict(row)
+            result_list.append(result)
+        return jsonify(result_list)
+
+    def get_number_replies_for_post(self, mid):
+        dao = MessagesDAO()
+        total = dao.get_number_replies_for_post(mid)
+        result_list = []
+        result = self.build_count_dict(total)
+        result_list.append(result)
+        return jsonify(TotalReplies=result_list)
+
     def get_posts_per_day(self):
         dao = MessagesDAO()
         count_list = dao.get_posts_per_day()
@@ -104,7 +126,16 @@ class MessagesHandler:
         for row in count_list:
             result = self.build_daily_posts_count_dict(row)
             result_list.append(result)
-        return jsonify(TotalDailyPosts=result_list)
+        return jsonify(result_list)
+
+    def get_posts_per_day_by_user(self, uid):
+        dao = MessagesDAO()
+        count_list = dao.get_posts_per_day_by_user(uid)
+        result_list = []
+        for row in count_list:
+            result = self.build_daily_posts_count_dict(row)
+            result_list.append(result)
+        return jsonify(result_list)
 
     ###########################################
     #             OTHER CRUD                  #
