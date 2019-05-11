@@ -49,9 +49,9 @@ class ChatsDAO:
 
     def get_chat_users(self, cid):
         cursor = self.conn.cursor()
-        query = "select uid, ufirst_name, ulast_name " \
+        query = "select uid as contactid, ufirst_name, ulast_name, username, uphone, uemail " \
                 "from users natural inner join ismember " \
-                "where cid = 1"
+                "where cid = %s"
         cursor.execute(query, (cid,))
         result = []
         for row in cursor:
@@ -68,3 +68,25 @@ class ChatsDAO:
         cursor.execute(query, (uid, cid,))
         self.conn.commit()
         return cid
+
+    def addContactToChat(self, uid, cid):
+        cursor = self.conn.cursor()
+        query = "INSERT INTO ismember (uid, cid) VALUES (%s, %s) returning cid;"
+        cursor.execute(query, (uid, cid))
+        cid = cursor.fetchone()[0]
+        self.conn.commit()
+        return cid
+
+    def removeContactFromChat(self,uid, cid):
+        cursor = self.conn.cursor()
+        query = "delete from ismember where uid = %s and cid = %s;"
+        cursor.execute(query, (uid, cid))
+        self.conn.commit()
+        return "deleted"
+
+    def deleteChat(self, uid, cid):
+        cursor = self.conn.cursor()
+        query = "delete from isMember where cid = %s;"
+        cursor.execute(query, (cid,))
+        self.conn.commit()
+        return "deleted"

@@ -158,7 +158,7 @@ def chatById(uid, cid):
     elif request.method == 'PUT':
         return ChatsHandler().updateChat(cid, request.form)
     elif request.method == 'DELETE':
-        return ChatsHandler().deleteChat(cid)
+        return ChatsHandler().deleteChat(request.json)
     else:
         return jsonify(Error="Method not allowed"), 405
 
@@ -171,10 +171,14 @@ def chat_owner(cid):
         return jsonify(Error="Method not allowed"), 405
 
 
-@app.route('/DbProject/chats/<int:cid>/users', methods=['GET'])
+@app.route('/DbProject/chats/<int:cid>/users', methods=['GET', 'POST', 'DELETE'])
 def chat_members(cid):
     if request.method == 'GET':
         return ChatsHandler().get_chat_users(cid)
+    elif request.method == 'POST':
+        return ChatsHandler().addContactToChat(request.json)
+    elif request.method == 'DELETE':
+        return ChatsHandler().removeContactFromChat(request.json)
     else:
         return jsonify(Error="Method not allowed"), 405
 
