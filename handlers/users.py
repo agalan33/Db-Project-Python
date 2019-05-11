@@ -4,6 +4,13 @@ import json
 
 class UserHandler:
 
+    def build_top_users_per_day(self, row):
+        result = {}
+        result['date'] = row[0]
+        result['username'] = row[1]
+        result['count'] = row[2]
+        return result
+
     def map_to_User(self, row):
         user = {}
         user['uid'] = row[0]
@@ -55,6 +62,14 @@ class UserHandler:
             mapped_result.append(self.map_to_User(r))
         return jsonify(mapped_result)
         return jsonify(result)
+
+    def get_most_active_users_per_day(self):
+        dao = UsersDao()
+        result = dao.get_most_active_users()
+        users = []
+        for user in result:
+            users.append(self.build_top_users_per_day(user))
+        return jsonify(users)
 
     def getUserByUsername(self,username):
         dao = UsersDao()

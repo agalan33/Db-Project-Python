@@ -79,6 +79,12 @@ def manage_user_username(username):
         return UserHandler().getUserByUsername(username)
     return jsonify(Error="Method Not Allowed")
 
+@app.route('/DbProject/users/mostActive', methods=['GET'])
+def get_most_active():
+    if request.method == 'GET':
+        return UserHandler().get_most_active_users_per_day()
+    else:
+        return jsonify(Error="Method not allowed"), 405
 ###########################################
 #             Contact                     #
 ###########################################
