@@ -40,6 +40,17 @@ class MessagesHandler:
         result['ulast_name'] = ulast_name
         return result
 
+    def build_reply_dict_attributes(self, mid, mtext, uid, cid, mdate, ufirst_name, ulast_name):
+        result = {}
+        result['mid'] = mid
+        result['mtext'] = mtext
+        result['mdate'] = mdate
+        result['uid'] = uid
+        result['cid'] = cid
+        result['ufirst_name'] = ufirst_name
+        result['ulast_name'] = ulast_name
+        return result
+
     def build_daily_posts_count_dict(self, row):
         result = {}
         result['day'] = row[0]
@@ -123,6 +134,33 @@ class MessagesHandler:
                 ulast_name = fullname[1]
                 new_message = self.build_message_dict_attributes(mid, image, text, uid, cid, mdate,
                                                                  ufirst_name, ulast_name)
+                hash_handler = HashtagsHandler()
+                hash_dao = HashtagsDAO()
+                for htext in hash_handler.get_mtext_hashtags(text):
+                    hid = hash_dao.search_hashtag(htext)
+                    if not hid:
+                        hid = hash_dao.post_hashtag(htext)
+                    hash_dao.insert_message_contains_hashtag(mid, hid)
+                return jsonify(new_message), 201
+            else:
+                return jsonify(Error="Unexpected attributes in post request"), 400
+        else:
+            return jsonify(Error="Malformed post request"), 400
+
+    def insertReply(self, form, mid, uid, cid):
+        print(form, file=sys.stderr)
+        if len(form) == 1:
+            text = form["mtext"]
+            if text:
+                dao = MessagesDAO()
+                udao = UsersDao()
+                row = dao.post_reply(mid, text, uid, cid)
+                mid = row[0]
+                mdate = row[1]
+                fullname = udao.get_fullname(uid)
+                ufirst_name = fullname[0]
+                ulast_name = fullname[1]
+                new_message = self.build_reply_dict_attributes(mid, text, uid, cid, mdate, ufirst_name, ulast_name)
                 hash_handler = HashtagsHandler()
                 hash_dao = HashtagsDAO()
                 for htext in hash_handler.get_mtext_hashtags(text):

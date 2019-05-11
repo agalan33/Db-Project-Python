@@ -82,3 +82,15 @@ class MessagesDAO:
         cursor.close()
         return result
 
+    def post_reply(self, mid, mtext, uid, cid):
+        cursor = self.conn.cursor()
+        query = "insert into messages (mtext, uid, cid) values (%s, %s, %s) returning mid, mdate"
+        cursor.execute(query, (mtext, uid, cid,))
+        result = cursor.fetchone()
+        reply_id = result[0]
+        query = "insert into replies (original_id, reply_id) values (%s, %s)"
+        cursor.execute(query, (mid, reply_id))
+        self.conn.commit()
+        cursor.close()
+        return result
+

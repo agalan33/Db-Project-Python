@@ -176,10 +176,12 @@ def messageById(uid, cid, mid):
         return jsonify(Error="Method not allowed"), 405
 
 
-@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/replies', methods=['GET'])
+@app.route('/DbProject/users/<int:uid>/chats/<int:cid>/messages/<int:mid>/replies', methods=['GET', 'POST'])
 def replies(uid, cid, mid):
     if request.method == 'GET':
         return MessagesHandler().get_replies(mid)
+    elif request.method == 'POST':
+        return MessagesHandler().insertReply(request.form, mid, uid, cid)
     else:
         return jsonify(Error="Method not allowed"), 405
 
