@@ -71,6 +71,7 @@ class UserHandler:
             users.append(self.build_top_users_per_day(user))
         return jsonify(users)
 
+
     def getUserByUsername(self,username):
         dao = UsersDao()
         result = dao.getUserByUsername(username)

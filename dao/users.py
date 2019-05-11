@@ -52,6 +52,16 @@ class UsersDao:
         self.conn.commit()
         return "Success"
 
+    def get_dates(self):
+        cursor = self.conn.cursor()
+        query = "select date(mdate) from messages group by date(mdate) ORDER BY date(mdate);"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
     # Get most active users in the system
     def get_most_active_users(self):
         cursor = self.conn.cursor()

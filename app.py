@@ -246,6 +246,14 @@ def posts_per_day_from_user(uid):
     else:
         return jsonify(Error="Method not allowed"), 405
 
+@app.route('/DbProject/messages/<int:mid>/repliestotal', methods=['GET'])
+def total_replies_for_message(mid):
+    if request.method == 'GET':
+        return MessagesHandler().get_total_replies(mid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
+
 
 ###########################################
 #             Hashtag                     #
