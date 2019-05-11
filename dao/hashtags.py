@@ -29,7 +29,7 @@ class HashtagsDAO:
     # Get top 10 hashtags and respective position depending on times used
     def get_trending_hashtags(self):
         cursor = self.conn.cursor()
-        query = "SELECT htext, ROW_NUMBER () OVER (ORDER BY COUNT(htext) DESC) FROM contains NATURAL INNER JOIN hashtags GROUP BY htext ORDER BY COUNT(htext) DESC FETCH FIRST 10 ROWS ONLY;"
+        query = "SELECT ROW_NUMBER () OVER (ORDER BY COUNT(htext) DESC), htext, COUNT(htext) FROM contains NATURAL INNER JOIN hashtags GROUP BY htext ORDER BY COUNT(htext) DESC FETCH FIRST 5 ROWS ONLY;"
         cursor.execute(query)
         result = []
         for row in cursor:
@@ -67,7 +67,7 @@ class HashtagsDAO:
         return result
 
     # Get messages that used hashtag with id equal to hid
-    def get_messages_with_hashtag(self,hid):
+    def get_messages_with_hashtag(self, hid):
         cursor = self.conn.cursor()
         query = "SELECT mid,mtext FROM contains NATURAL INNER JOIN hashtags NATURAL INNER JOIN messages WHERE hid = %s;"
         cursor.execute(query, (hid,))
@@ -76,3 +76,32 @@ class HashtagsDAO:
             result.append(row)
         cursor.close()
         return result
+
+    def search_hashtag(self, htext):
+        cursor = self.conn.cursor()
+        query = "select hid from hashtags where htext= %s"
+        cursor.execute(query, (htext,))
+        hid = cursor.fetchone()
+        cursor.close()
+        return hid
+
+    ###########################################
+    #               POST                      #
+    ###########################################
+    def post_hashtag(self, htext):
+        cursor = self.conn.cursor()
+        query = "insert into hashtags (htext) values (%s) returning hid"
+        cursor.execute(query, (htext,))
+        hid = cursor.fetchone()[0]
+        self.conn.commit()
+        cursor.close()
+        return hid
+
+    def insert_message_contains_hashtag(self, mid, hid):
+        cursor = self.conn.cursor()
+        query = "insert into contains (mid, hid) values (%s, %s)"
+        cursor.execute(query, (mid, hid,))
+        self.conn.commit()
+        cursor.close()
+        return 'OK'
+

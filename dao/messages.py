@@ -60,12 +60,75 @@ class MessagesDAO:
 
     def get_posts_per_day(self):
         cursor = self.conn.cursor()
-        query = "select date(mdate), count(*) " \
-                "from messages " \
-                "group by date(mdate)"
+        query = "select date(mdate), count(*) from messages group by date(mdate) order by date(mdate);"
         cursor.execute(query)
         result = []
         for row in cursor:
             result.append(row)
         cursor.close()
         return result
+
+    def get_posts_per_day_by_user(self, uid):
+        cursor = self.conn.cursor()
+        query = "select date(mdate), count(*) from messages where uid = %s group by date(mdate) ORDER BY date(mdate);"
+        cursor.execute(query, (uid,))
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
+    def get_replies_per_day(self):
+        cursor = self.conn.cursor()
+        query = "SELECT date(mdate), COUNT(*) FROM messages AS M INNER JOIN replies AS R ON M.mid = R.reply_id GROUP BY date(mdate) ORDER BY date(mdate);"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
+    def get_number_replies_for_post(self, mid):
+        cursor = self.conn.cursor()
+        query = "SELECT COUNT(*) FROM messages AS M INNER JOIN replies AS R ON M.mid = R.original_id WHERE M.mid = %s;"
+        cursor.execute(query, (mid,))
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
+    def get_total_replies(self, mid):
+        cursor = self.conn.cursor()
+        query = "select count(reply_id) from replies where original_id = %s"
+        cursor.execute(query, (mid,))
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
+    ###########################################
+    #             POST                        #
+    ###########################################
+    def post_message(self, mimage, mtext, uid, cid):
+        cursor = self.conn.cursor()
+        query = "insert into messages (mimage, mtext, uid, cid) values (%s, %s, %s, %s) returning mid, mdate"
+        cursor.execute(query, (mimage, mtext, uid, cid,))
+        result = cursor.fetchone()
+        self.conn.commit()
+        cursor.close()
+        return result
+
+    def post_reply(self, mid, mtext, uid, cid):
+        cursor = self.conn.cursor()
+        query = "insert into messages (mtext, uid, cid) values (%s, %s, %s) returning mid, mdate"
+        cursor.execute(query, (mtext, uid, cid,))
+        result = cursor.fetchone()
+        reply_id = result[0]
+        query = "insert into replies (original_id, reply_id) values (%s, %s)"
+        cursor.execute(query, (mid, reply_id))
+        self.conn.commit()
+        cursor.close()
+        return result
+

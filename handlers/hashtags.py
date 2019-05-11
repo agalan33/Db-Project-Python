@@ -11,8 +11,9 @@ class HashtagsHandler:
 
     def build_trending_dict(self, row):
         result = {}
-        result['htext'] = row[0]
-        result['position'] = row[1]
+        result['position'] = row[0]
+        result['htext'] = row[1]
+        result['count'] = row[2]
         return result
 
     def build_hashtag_dict(self, row):
@@ -51,7 +52,7 @@ class HashtagsHandler:
         for hashtag in trending:
             dict = self.build_trending_dict(hashtag)
             result.append(dict)
-        return jsonify(Trending=result)
+        return jsonify(result)
 
     # Get hashtags contained in message with id equal to mid
     def get_hashtags_for_message(self, mid):
@@ -89,10 +90,6 @@ class HashtagsHandler:
             result.append(dict)
         return jsonify(Messages=result)
 
-
-
-
-
     def searchHashtag(self, args):
         text = args.get('htext')
         result_list = []
@@ -106,7 +103,6 @@ class HashtagsHandler:
         else:
             return jsonify(Error="Malformed query string"), 400
         return jsonify(Hashtag=result_list)
-
 
     def createHashtag(self, form):
         text = form['htext']
@@ -123,7 +119,6 @@ class HashtagsHandler:
                 return jsonify(Error="Unexpected attributes in post request"), 400
         else:
             return jsonify(Error="Malformed update request"), 400
-
 
     def updateHashtag(self, hid, form):
         text = form['htext']
