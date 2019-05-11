@@ -90,7 +90,17 @@ class MessagesDAO:
 
     def get_number_replies_for_post(self, mid):
         cursor = self.conn.cursor()
-        query = "SELECT COUNT(*) FROM messages AS M INNER JOIN replies AS R ON M.mid = R.original_id WHERE M.mid = 5;"
+        query = "SELECT COUNT(*) FROM messages AS M INNER JOIN replies AS R ON M.mid = R.original_id WHERE M.mid = %s;"
+        cursor.execute(query, (mid,))
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
+
+    def get_total_replies(self, mid):
+        cursor = self.conn.cursor()
+        query = "select count(reply_id) from replies where original_id = %s"
         cursor.execute(query, (mid,))
         result = []
         for row in cursor:

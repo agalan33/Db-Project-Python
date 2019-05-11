@@ -137,6 +137,11 @@ class MessagesHandler:
             result_list.append(result)
         return jsonify(result_list)
 
+    def get_total_replies(self, mid):
+        dao = MessagesDAO()
+        count = dao.get_total_replies(mid)
+        return jsonify(count)
+
     ###########################################
     #             OTHER CRUD                  #
     ###########################################

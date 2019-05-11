@@ -234,6 +234,14 @@ def number_replies_for_message(mid):
     else:
         return jsonify(Error="Method not allowed"), 405
 
+
+@app.route('/DbProject/messages/<int:mid>/repliestotal', methods=['GET'])
+def total_replies_for_message(mid):
+    if request.method == 'GET':
+        return MessagesHandler().get_total_replies(mid)
+    else:
+        return jsonify(Error="Method not allowed"), 405
+
 @app.route('/DbProject/messages/daily_count', methods=['GET'])
 def posts_per_day():
     if request.method == 'GET':
