@@ -91,12 +91,10 @@ class ChatsHandler:
             else:
                 return jsonify(Error="Unexpected attributes in update request"), 400
 
-    def deleteChat(self, cid):
-        chatToDelete = {
-            "cid": cid,
-            "cname": "PUBG"
-        }
-        return jsonify(DeleteStatus="OK"), 200
+    def deleteChat(self, data):
+        dao = ChatsDAO()
+        result = dao.deleteChat(data['uid'], data['cid'])
+        return jsonify(Result=result)
 
     def get_chat_owner(self, cid):
         dao = ChatsDAO()
@@ -117,10 +115,22 @@ class ChatsHandler:
         result_list = []
         for row in users_list:
             user = {
-                'uid': row[0],
+                'contactid': row[0],
                 'ufirst_name': row[1],
-                'ulast_name:': row[2]
+                'ulast_name': row[2],
+                'username': row[3],
+                'uphone': row[4],
+                'uemail': row[5]
             }
             result_list.append(user)
         return jsonify(result_list)
 
+    def addContactToChat(self, data):
+        dao = ChatsDAO()
+        result = dao.addContactToChat(data['uid'], data['cid'])
+        return jsonify(CID=result)
+
+    def removeContactFromChat(self, data):
+        dao = ChatsDAO()
+        result = dao.removeContactFromChat(data['uid'], data['cid'])
+        return jsonify(Result=result)
