@@ -8,11 +8,21 @@ class ReactionsHandler:
     def build_reaction_dict(self, row):
         result = {}
         result['rid'] = row[0]
-        result['like'] = row[1]
-        result['dislike'] = row[2]
+        result['rlike'] = row[1]
+        result['rdislike'] = row[2]
         result['mid'] = row[3]
         result['uid'] = row[4]
         result['date'] = row[5]
+        return result
+
+    def build_reaction_dict_attr(self, rid, rlike, rdislike, mid, uid, rdate):
+        result = {}
+        result['rid'] = rid
+        result['rlike'] = rlike
+        result['rdislike'] = rdislike
+        result['mid'] = mid
+        result['uid'] = uid
+        result['date'] = rdate
         return result
 
     def build_user_dict(self, row):
@@ -23,6 +33,12 @@ class ReactionsHandler:
         result['rdate'] = row[3]
         return result
 
+    def build_total_dict(self, row):
+        result = {}
+        result['date'] = row[0]
+        result['count'] = row[1]
+        return result
+
     def createReaction(self, form):
         result = {
             'rid' : 0,
@@ -30,7 +46,6 @@ class ReactionsHandler:
             'dislike': 0,
         }
         return jsonify(Reaction = result)
-
 
     ###########################################
     #               GETS                      #
@@ -110,34 +125,68 @@ class ReactionsHandler:
             result.append(dict)
         return jsonify(result)
 
+    def get_user_reaction(self, mid, uid):
+        dao = ReactionsDAO()
+        row = dao.get_user_reaction(mid, uid)
+        if not row:
+            return jsonify(False)
+        else:
+            reaction = self.build_reaction_dict(row)
+            return jsonify(reaction)
 
+    def get_total_likes_per_day(self):
+        dao = ReactionsDAO()
+        likes = dao.get_likes_per_day()
+        result_list = []
+        for row in likes:
+            result = self.build_total_dict(row)
+            result_list.append(result)
+        return jsonify(result_list)
+
+    def get_total_dislikes_per_day(self):
+        dao = ReactionsDAO()
+        dislikes = dao.get_dislikes_per_day()
+        result_list = []
+        for row in dislikes:
+            result = self.build_total_dict(row)
+            result_list.append(result)
+        return jsonify(result_list)
 
     ###########################################
     #                CRUD                     #
     ###########################################
-
+    def insert_reaction(self, form, uid, mid):
+        if len(form) != 2:
+            return jsonify(Error="Number of attributes different from 2"), 400
+        else:
+            rlike = form['rlike']
+            rdislike = form['rdislike']
+            if rlike and rdislike:
+                dao = ReactionsDAO()
+                row = dao.insert_reaction(rlike, rdislike, mid, uid)
+                rid = row[0]
+                rdate = row[1]
+                result = self.build_reaction_dict_attr(rid, rlike, rdislike, mid, uid, rdate)
+                return jsonify(result)
+            else:
+                return jsonify(Error="Malformed post request"), 404
 
     def updateReactionById(self, rid, form):
         if len(form) != 2:
             return jsonify(Error="Number of attributes different from 2"), 400
         else:
-            ulike = form['like']            #updated like
-            udislike = form['dislike']
-            if ulike and udislike:
-                result = {
-                    'rid' : 1,
-                    'like' : ulike,
-                    'dislike' : udislike,
-                    'uid': 1
-                }
-
-                return jsonify(Update=result), 200
+            rlike = form['rlike']
+            rdislike = form['rdislike']
+            if rlike and rdislike:
+                dao = ReactionsDAO()
+                row = dao.get_reaction_by_id(rid)
+                if not row:
+                    return jsonify(Error="Reaction not found"), 404
+                else:
+                    result = dao.update_reaction(rid, rlike, rdislike)
+                    return jsonify(Status=result), 201
             else:
-
                 return jsonify(Error="Unexpected attributes in update request"), 400
-
-
-
 
     def deleteReactionsById(self, rid):
         return jsonify(DeleteStatus="OK"), 200

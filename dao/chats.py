@@ -22,7 +22,8 @@ class ChatsDAO:
 
     def get_user_chats(self, uid):
         cursor = self.conn.cursor()
-        query = "select * from chats where cid = (select cid from ismember where uid = %s)"
+        query = "select iM.cid, cname, iM.uid from chats as C inner join isMember iM on C.cid = iM.cid " \
+                "where iM.uid = %s"
         cursor.execute(query, (uid,))
         result = []
         for row in cursor:
@@ -48,12 +49,44 @@ class ChatsDAO:
 
     def get_chat_users(self, cid):
         cursor = self.conn.cursor()
-        query = "select uid, ufirst_name, ulast_name " \
+        query = "select uid as contactid, ufirst_name, ulast_name, username, uphone, uemail " \
                 "from users natural inner join ismember " \
-                "where cid = 1"
+                "where cid = %s"
         cursor.execute(query, (cid,))
         result = []
         for row in cursor:
             result.append(row)
         cursor.close()
         return result
+
+    def create_chat(self, cname, uid):
+        cursor = self.conn.cursor()
+        query = "insert into chats(cname, uid) values (%s, %s) returning cid"
+        cursor.execute(query, (cname, uid,))
+        cid = cursor.fetchone()[0]
+        query = "insert into ismember(uid, cid) values (%s, %s)"
+        cursor.execute(query, (uid, cid,))
+        self.conn.commit()
+        return cid
+
+    def addContactToChat(self, uid, cid):
+        cursor = self.conn.cursor()
+        query = "INSERT INTO ismember (uid, cid) VALUES (%s, %s) returning cid;"
+        cursor.execute(query, (uid, cid))
+        cid = cursor.fetchone()[0]
+        self.conn.commit()
+        return cid
+
+    def removeContactFromChat(self,uid, cid):
+        cursor = self.conn.cursor()
+        query = "delete from ismember where uid = %s and cid = %s;"
+        cursor.execute(query, (uid, cid))
+        self.conn.commit()
+        return "deleted"
+
+    def deleteChat(self, uid, cid):
+        cursor = self.conn.cursor()
+        query = "delete from isMember where cid = %s;"
+        cursor.execute(query, (cid,))
+        self.conn.commit()
+        return "deleted"

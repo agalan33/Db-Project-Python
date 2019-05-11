@@ -1,5 +1,6 @@
 from flask import jsonify
 from dao.chats import ChatsDAO
+import sys
 
 
 class ChatsHandler:
@@ -10,10 +11,16 @@ class ChatsHandler:
         result['uid'] = row[2]
         return result
 
+    def build_chat_attributes(self, cid, cname, uid):
+        result = {}
+        result['cid'] = cid
+        result['cname'] = cname
+        result['uid'] = uid
+        return result
+
     ###########################################
     #             GETS                        #
     ###########################################
-
     def get_all_chats(self):
         dao = ChatsDAO()
         chats_list = dao.get_all_chats()
@@ -31,20 +38,6 @@ class ChatsHandler:
             result = self.build_chat_dict(row)
             result_list.append(result)
         return jsonify(result_list)
-
-    def createChat(self, form):
-        if len(form) != 1:
-            return jsonify(Error="Malformed post request"), 400
-        else:
-            cname = form['cname']
-            if cname:
-                result = {
-                    "cid": "4",
-                    "cname": cname
-                }
-                return jsonify(Chats=result), 201
-            else:
-                return jsonify(Error="Unexpected attributes in post request"), 400
 
     def searchChats(self, args):
         name = args.get('name')
@@ -71,6 +64,18 @@ class ChatsHandler:
     ###########################################
     #             OTHER CRUD                  #
     ###########################################
+    def createChat(self, form, uid):
+        if len(form) != 1:
+            return jsonify(Error="Malformed post request"), 400
+        else:
+            cname = form['cname']
+            if cname:
+                dao = ChatsDAO()
+                cid = dao.create_chat(cname, uid)
+                result = self.build_chat_attributes(cid, cname, uid)
+                return jsonify(result), 201
+            else:
+                return jsonify(Error="Unexpected attributes in post request"), 400
 
     def updateChat(self, cid, form):
         if len(form) != 1:
@@ -86,12 +91,10 @@ class ChatsHandler:
             else:
                 return jsonify(Error="Unexpected attributes in update request"), 400
 
-    def deleteChat(self, cid):
-        chatToDelete = {
-            "cid": cid,
-            "cname": "PUBG"
-        }
-        return jsonify(DeleteStatus="OK"), 200
+    def deleteChat(self, data):
+        dao = ChatsDAO()
+        result = dao.deleteChat(data['uid'], data['cid'])
+        return jsonify(Result=result)
 
     def get_chat_owner(self, cid):
         dao = ChatsDAO()
@@ -112,10 +115,22 @@ class ChatsHandler:
         result_list = []
         for row in users_list:
             user = {
-                'uid': row[0],
+                'contactid': row[0],
                 'ufirst_name': row[1],
-                'ulast_name:': row[2]
+                'ulast_name': row[2],
+                'username': row[3],
+                'uphone': row[4],
+                'uemail': row[5]
             }
             result_list.append(user)
         return jsonify(result_list)
 
+    def addContactToChat(self, data):
+        dao = ChatsDAO()
+        result = dao.addContactToChat(data['uid'], data['cid'])
+        return jsonify(CID=result)
+
+    def removeContactFromChat(self, data):
+        dao = ChatsDAO()
+        result = dao.removeContactFromChat(data['uid'], data['cid'])
+        return jsonify(Result=result)
