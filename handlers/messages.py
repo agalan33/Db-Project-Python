@@ -154,10 +154,14 @@ class MessagesHandler:
         }
         return jsonify(DeleteStatus="OK"), 200
 
-    def createMessage(self, form, uid, cid):
+    def createMessage(self, files, form, uid, cid):
+        print(files, file=sys.stderr)
         print(form, file=sys.stderr)
-        if len(form) == 2:
-            image = form["mimage"]
+        file = files["mimage"]
+        if len(form) == 1 and file:
+            filename = "img" + '_' + str(uid) + '_' + file.filename
+            file.save("static/images/" + filename)
+            image = "static/images/" + filename
             text = form["mtext"]
             if image and text:
                 dao = MessagesDAO()
